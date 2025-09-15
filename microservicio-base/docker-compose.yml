@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+
+    servicio-ejemplo:
+        restart: always
+        build: ./servicio-ejemplo
+        volumes:
+            - ./servicio-ejemplo:/usr/src/app
+        ports:
+            - 5001:81
+        # depends_on: 
+        #     - database-service
+        networks:
+            - app-lab3
+        container_name: servicio-ejemplo
+    
+    database:
+        image: postgres:16
+        container_name: database
+        environment:
+            - POSTGRES_PASSWORD=postgres
+            - POSTGRES_USER=postgres
+            - POSTGRES_DB=postgres
+        ports:
+            - "5434:5432"
+        volumes:
+            - ./data:/var/lib/postgresql/data
+            - ./db-service:/docker-entrypoint-initdb.d
+        restart: always
+  
+    web:
+        restart: always
+        build: ./web
+        volumes:
+            - ./web:/usr/src/app
+        ports:
+            - 8089:89
+        networks:
+            - app
+        container_name: servicio-web
+  
+networks:
+    app:
+        driver: bridge     
