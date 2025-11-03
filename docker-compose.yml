@@ -17,19 +17,19 @@ services:
 
   web:
     build:
-      context: ./web-react-vite
+      context: ./web
       dockerfile: Dockerfile
     container_name: isfpp-web
     restart: unless-stopped
     ports:
-      - "3000:3000" # El contenedor está levantando Vite en el puerto 3000 según logs
+      - "3000:3000"
     environment:
       # Apunta al backend por nombre de servicio y puerto interno (99)
       VITE_BACKEND_URL: "http://backend:99"
     depends_on:
       - backend
     volumes:
-      - ./web-react-vite:/app
+      - ./web:/app
       - /app/node_modules
 
   database:

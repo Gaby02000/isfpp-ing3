@@ -1,0 +1,28 @@
+{
+  "name": "isfpp-proyecto",
+  "version": "1.0.0",
+  "description": "Scripts para gestionar frontend y backend",
+  "packageManager": "pnpm@8.15.0",
+  "scripts": {
+    "dev": "pnpm run dev:frontend & pnpm run dev:backend",
+    "dev:frontend": "pnpm --filter web dev",
+    "dev:backend": "pnpm --filter backend dev",
+    "install:all": "pnpm install",
+    "install:frontend": "pnpm --filter web install",
+    "install:backend": "pnpm --filter backend install",
+    "start": "docker-compose up -d",
+    "start:build": "docker-compose up -d --build",
+    "stop": "docker-compose down",
+    "stop:volumes": "docker-compose down -v",
+    "logs": "docker-compose logs -f",
+    "logs:backend": "docker-compose logs -f backend",
+    "logs:frontend": "docker-compose logs -f web",
+    "restart": "docker-compose restart",
+    "status": "docker-compose ps",
+    "backend": "docker-compose up -d database backend",
+    "frontend": "docker-compose up -d web",
+    "build": "pnpm --filter web build",
+    "lint": "pnpm --filter web lint"
+  }
+}
+

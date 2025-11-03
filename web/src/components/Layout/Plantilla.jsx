@@ -1,11 +1,11 @@
 import React from 'react';
 import { Container } from 'react-bootstrap';
-import NavigationBar from './NavigationBar';
+import BarraNavegacion from './BarraNavegacion';
 
-const Layout = ({ children }) => {
+const Plantilla = ({ children }) => {
   return (
     <>
-      <NavigationBar />
+      <BarraNavegacion />
       <Container>
         {children}
       </Container>
@@ -13,4 +13,4 @@ const Layout = ({ children }) => {
   );
 };
 
-export default Layout;
+export default Plantilla;

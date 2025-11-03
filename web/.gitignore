@@ -7,7 +7,15 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencias
 node_modules
+package-lock.json
+yarn.lock
+
+# pnpm-lock.yaml se versiona
+!pnpm-lock.yaml
+
+# Build
 dist
 dist-ssr
 *.local

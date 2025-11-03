@@ -2,7 +2,7 @@ import React from 'react';
 import { Navbar, Container, Nav, NavDropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
-const NavigationBar = () => {
+const BarraNavegacion = () => {
   return (
     <Navbar expand="md" bg="light" variant="light">
       <Container>
@@ -11,12 +11,13 @@ const NavigationBar = () => {
         <Navbar.Collapse id="navbarNav">
           <Nav className="me-auto">
             <Nav.Link as={Link} to="/">Inicio</Nav.Link>
-            <NavDropdown title="Gestión de Mozos" id="nav-dropdown">
-              <NavDropdown.Item as={Link} to="/gestion-mozos">Panel de Gestión</NavDropdown.Item>
+            <Nav.Link as={Link} to="/gestion">Gestión</Nav.Link>
+            <NavDropdown title="Mozos" id="nav-dropdown">
+              <NavDropdown.Item as={Link} to="/gestion/mozos">Gestión de Mozos</NavDropdown.Item>
               <NavDropdown.Divider />
-              <NavDropdown.Item as={Link} to="/alta-mozo">Alta de Mozo</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/baja-mozo">Baja de Mozo</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/modificar-mozo">Modificar Mozo</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/gestion/mozos/alta">Alta de Mozo</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/gestion/mozos/modificar">Modificar Mozo</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/gestion/mozos/baja">Baja de Mozo</NavDropdown.Item>
             </NavDropdown>
           </Nav>
         </Navbar.Collapse>
@@ -25,4 +26,4 @@ const NavigationBar = () => {
   );
 };
 
-export default NavigationBar;
+export default BarraNavegacion;

@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from db import SessionLocal
-from models.models import Seccion
+from models import Seccion
 
 seccion_bp = Blueprint('seccion', __name__)
 
