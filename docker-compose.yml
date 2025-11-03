@@ -1,0 +1,51 @@
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: isfpp-backend
+    restart: unless-stopped
+    ports:
+      - "8099:99" # mapea el puerto del host 8099 al puerto 99 del contenedor (según backend/app.py)
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@database/postgresIng
+    depends_on:
+      - database
+    volumes:
+      - ./backend:/app
+
+  web:
+    build:
+      context: ./web-react-vite
+      dockerfile: Dockerfile
+    container_name: isfpp-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000" # El contenedor está levantando Vite en el puerto 3000 según logs
+    environment:
+      # Apunta al backend por nombre de servicio y puerto interno (99)
+      VITE_BACKEND_URL: "http://backend:99"
+    depends_on:
+      - backend
+    volumes:
+      - ./web-react-vite:/app
+      - /app/node_modules
+
+  database:
+    image: postgres:15
+    container_name: postgresIng
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgresIng
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+volumes:
+  db_data:
+    driver: local
