@@ -31,6 +31,20 @@ export const useSectorService = () => {
     }
   }, []);
 
+  const getTodosSectores = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${BACKEND_URL}/api/sectores/todos`);
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message || 'Error al obtener los sectores';
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const getSector = useCallback(async (id) => {
     try {
       setLoading(true);
@@ -86,6 +100,7 @@ export const useSectorService = () => {
 
   return {
     getSectores,
+    getTodosSectores,
     getSector,
     createSector,
     updateSector,

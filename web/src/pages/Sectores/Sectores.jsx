@@ -54,8 +54,11 @@ const Sectores = () => {
       
       const response = await getSectores(filters);
       
-      // Aplicar búsqueda local si hay texto de búsqueda
+      // El backend retorna {status: 'success', data: [...], pagination: {...}}
+      // getSectores retorna response.data (después de axios), entonces response ya es el objeto Flask
       let sectoresData = response.data || [];
+      
+      // Aplicar búsqueda local si hay texto de búsqueda
       if (busqueda) {
         const searchLower = busqueda.toLowerCase();
         sectoresData = sectoresData.filter(sector => 

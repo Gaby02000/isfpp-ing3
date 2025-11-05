@@ -9,7 +9,8 @@ const ModalMesa = ({
   onHide, 
   editingMesa, 
   onSubmit, 
-  sectores 
+  sectores,
+  tiposMesas
 }) => {
   return (
     <Modal show={show} onHide={onHide} size="lg">
@@ -46,17 +47,28 @@ const ModalMesa = ({
                   />
                 </Col>
                 <Col md={6}>
-                  <CampoFormulario
-                    label="Tipo"
-                    name="tipo"
-                    type="text"
-                    value={values.tipo}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    touched={touched.tipo}
-                    error={errors.tipo}
-                    placeholder="Ej: interior, exterior, vip..."
-                  />
+                  <Form.Group className="mb-3">
+                    <Form.Label>Tipo</Form.Label>
+                    <Form.Select
+                      name="tipo"
+                      value={values.tipo}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      isInvalid={touched.tipo && errors.tipo}
+                    >
+                      <option value="">Seleccione un tipo</option>
+                      {tiposMesas.map((tipo) => (
+                        <option key={tipo} value={tipo}>
+                          {tipo}
+                        </option>
+                      ))}
+                    </Form.Select>
+                    {touched.tipo && errors.tipo && (
+                      <Form.Control.Feedback type="invalid">
+                        {errors.tipo}
+                      </Form.Control.Feedback>
+                    )}
+                  </Form.Group>
                 </Col>
               </Row>
               <Row>

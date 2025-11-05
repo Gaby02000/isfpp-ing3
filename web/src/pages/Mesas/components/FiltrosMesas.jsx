@@ -8,6 +8,7 @@ const FiltrosMesas = ({
   onBusquedaChange,
   onLimpiar,
   sectores,
+  tiposMesas,
   totalMesas,
   mesasFiltradas
 }) => {
@@ -65,9 +66,11 @@ const FiltrosMesas = ({
               onChange={(e) => onFiltroChange('tipo', e.target.value)}
             >
               <option value="">Todos los tipos</option>
-              <option value="interior">Interior</option>
-              <option value="exterior">Exterior</option>
-              <option value="vip">VIP</option>
+              {tiposMesas.map((tipo) => (
+                <option key={tipo} value={tipo}>
+                  {tipo}
+                </option>
+              ))}
             </Form.Select>
           </Form.Group>
         </Col>

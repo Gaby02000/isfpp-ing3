@@ -11,10 +11,11 @@ import ModalBajaMesa from './components/ModalBajaMesa';
 import Paginacion from '../../components/common/Paginacion';
 
 const Mesas = () => {
-  const { getMesas, createMesa, updateMesa, deleteMesa, loading } = useMesaService();
-  const { getSectores } = useSectorService();
+  const { getMesas, getTiposMesas, createMesa, updateMesa, deleteMesa, loading } = useMesaService();
+  const { getTodosSectores } = useSectorService();
   const [mesas, setMesas] = useState([]);
   const [sectores, setSectores] = useState([]);
+  const [tiposMesas, setTiposMesas] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [editingMesa, setEditingMesa] = useState(null);
@@ -43,6 +44,7 @@ const Mesas = () => {
   useEffect(() => {
     loadMesas();
     loadSectores();
+    loadTiposMesas();
   }, []);
 
   useEffect(() => {
@@ -85,10 +87,21 @@ const Mesas = () => {
 
   const loadSectores = async () => {
     try {
-      const response = await getSectores();
+      const response = await getTodosSectores();
+      // El backend retorna {status: 'success', data: [...]}
       setSectores(response.data || []);
     } catch (error) {
       console.error('Error al cargar sectores:', error);
+    }
+  };
+
+  const loadTiposMesas = async () => {
+    try {
+      const response = await getTiposMesas();
+      // El backend retorna {status: 'success', data: [...]}
+      setTiposMesas(response.data || []);
+    } catch (error) {
+      console.error('Error al cargar tipos de mesas:', error);
     }
   };
 
@@ -202,16 +215,17 @@ const Mesas = () => {
         </Button>
       </div>
 
-      <FiltrosMesas
-        filtros={filtros}
-        onFiltroChange={handleFiltroChange}
-        busqueda={busqueda}
-        onBusquedaChange={setBusqueda}
-        onLimpiar={handleLimpiarFiltros}
-        sectores={sectores}
-        totalMesas={pagination.total}
-        mesasFiltradas={mesasFiltradas.length}
-      />
+             <FiltrosMesas
+               filtros={filtros}
+               onFiltroChange={handleFiltroChange}
+               busqueda={busqueda}
+               onBusquedaChange={setBusqueda}
+               onLimpiar={handleLimpiarFiltros}
+               sectores={sectores}
+               tiposMesas={tiposMesas}
+               totalMesas={pagination.total}
+               mesasFiltradas={mesasFiltradas.length}
+             />
 
       <TablaMesas
         mesas={mesasFiltradas}
@@ -233,6 +247,7 @@ const Mesas = () => {
         editingMesa={editingMesa}
         onSubmit={handleSubmit}
         sectores={sectores}
+        tiposMesas={tiposMesas}
       />
 
       <ModalBajaMesa

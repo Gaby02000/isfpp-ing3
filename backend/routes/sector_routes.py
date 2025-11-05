@@ -72,6 +72,38 @@ def listar_sectores():
         session.close()
 
 
+@sector_bp.route('/todos', methods=['GET'])
+def listar_todos_sectores():
+    """Endpoint para obtener todos los sectores activos sin paginación (para usar en selects)"""
+    session = SessionLocal()
+    try:
+        query = session.query(Sector).filter_by(baja=False).order_by(Sector.numero)
+        sectores = query.all()
+        
+        data = []
+        for s in sectores:
+            sector_data = s.json()
+            # Contar mesas activas del sector
+            mesas_activas = session.query(Mesa).filter_by(
+                id_sector=s.id_sector,
+                baja=False
+            ).count()
+            sector_data['cantidad_mesas'] = mesas_activas
+            data.append(sector_data)
+        
+        return jsonify({
+            'status': 'success',
+            'data': data
+        }), 200
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Error al listar sectores: {str(e)}'
+        }), 500
+    finally:
+        session.close()
+
+
 @sector_bp.route('/', methods=['POST'])
 def crear_sector():
     session = SessionLocal()

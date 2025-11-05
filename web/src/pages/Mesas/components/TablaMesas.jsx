@@ -30,7 +30,6 @@ const TablaMesas = ({ mesas, onEdit, onDelete }) => {
     <Table striped bordered hover responsive>
       <thead>
         <tr>
-          <th>ID</th>
           <th>Número</th>
           <th>Tipo</th>
           <th>Comensales</th>

@@ -31,6 +31,20 @@ export const useMesaService = () => {
     }
   }, []);
 
+  const getTiposMesas = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${BACKEND_URL}/api/mesas/tipos`);
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message || 'Error al obtener los tipos de mesas';
+      setError(errorMessage);
+      throw new Error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const getMesasDisponibles = useCallback(async (filters = {}) => {
     try {
       setLoading(true);
@@ -103,6 +117,7 @@ export const useMesaService = () => {
 
   return {
     getMesas,
+    getTiposMesas,
     getMesasDisponibles,
     getMesa,
     createMesa,

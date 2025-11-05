@@ -112,6 +112,28 @@ def listar_mesas_disponibles():
         session.close()
 
 
+@mesa_bp.route('/tipos', methods=['GET'])
+def listar_tipos_mesas():
+    """Endpoint para obtener los tipos únicos de mesas"""
+    session = SessionLocal()
+    try:
+        # Obtener tipos únicos de mesas activas
+        tipos = session.query(Mesa.tipo).filter_by(baja=False).distinct().order_by(Mesa.tipo).all()
+        tipos_list = [tipo[0] for tipo in tipos]
+        
+        return jsonify({
+            'status': 'success',
+            'data': tipos_list
+        }), 200
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Error al listar tipos de mesas: {str(e)}'
+        }), 500
+    finally:
+        session.close()
+
+
 @mesa_bp.route('/', methods=['POST'])
 def crear_mesa():
     session = SessionLocal()
