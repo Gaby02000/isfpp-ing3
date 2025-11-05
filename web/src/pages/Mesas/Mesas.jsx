@@ -91,7 +91,8 @@ const Mesas = () => {
       // El backend retorna {status: 'success', data: [...]}
       setSectores(response.data || []);
     } catch (error) {
-      console.error('Error al cargar sectores:', error);
+      // Error silencioso - no mostrar alerta para este caso
+      setSectores([]);
     }
   };
 
@@ -101,7 +102,8 @@ const Mesas = () => {
       // El backend retorna {status: 'success', data: [...]}
       setTiposMesas(response.data || []);
     } catch (error) {
-      console.error('Error al cargar tipos de mesas:', error);
+      // Error silencioso - no mostrar alerta para este caso
+      setTiposMesas([]);
     }
   };
 
