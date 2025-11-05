@@ -14,6 +14,16 @@ def listar_mesas():
         estado = request.args.get('estado', type=str)  # 'activa' o 'baja'
         ordenar_por = request.args.get('ordenar_por', default='numero', type=str)
         
+        # Parámetros de paginación
+        page = request.args.get('page', default=1, type=int)
+        per_page = request.args.get('per_page', default=10, type=int)
+        
+        # Validar parámetros de paginación
+        if page < 1:
+            page = 1
+        if per_page < 1 or per_page > 100:
+            per_page = 10
+        
         query = session.query(Mesa)
         
         # Filtros
@@ -35,12 +45,28 @@ def listar_mesas():
         elif ordenar_por == 'sector':
             query = query.join(Sector).order_by(Sector.numero)
         
-        mesas = query.all()
+        # Contar total antes de paginar
+        total = query.count()
+        
+        # Aplicar paginación
+        offset = (page - 1) * per_page
+        mesas = query.offset(offset).limit(per_page).all()
         data = [m.json() for m in mesas]
+        
+        # Calcular total de páginas
+        total_pages = (total + per_page - 1) // per_page if total > 0 else 1
         
         return jsonify({
             'status': 'success',
-            'data': data
+            'data': data,
+            'pagination': {
+                'page': page,
+                'per_page': per_page,
+                'total': total,
+                'total_pages': total_pages,
+                'has_next': page < total_pages,
+                'has_prev': page > 1
+            }
         }), 200
     except Exception as e:
         return jsonify({
@@ -81,6 +107,28 @@ def listar_mesas_disponibles():
         return jsonify({
             'status': 'error',
             'message': f'Error al listar mesas disponibles: {str(e)}'
+        }), 500
+    finally:
+        session.close()
+
+
+@mesa_bp.route('/tipos', methods=['GET'])
+def listar_tipos_mesas():
+    """Endpoint para obtener los tipos únicos de mesas"""
+    session = SessionLocal()
+    try:
+        # Obtener tipos únicos de mesas activas
+        tipos = session.query(Mesa.tipo).filter_by(baja=False).distinct().order_by(Mesa.tipo).all()
+        tipos_list = [tipo[0] for tipo in tipos]
+        
+        return jsonify({
+            'status': 'success',
+            'data': tipos_list
+        }), 200
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Error al listar tipos de mesas: {str(e)}'
         }), 500
     finally:
         session.close()

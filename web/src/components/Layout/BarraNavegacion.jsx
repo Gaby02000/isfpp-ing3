@@ -12,6 +12,12 @@ const BarraNavegacion = () => {
           <Nav className="me-auto">
             <Nav.Link as={Link} to="/">Inicio</Nav.Link>
             <Nav.Link as={Link} to="/gestion">Gestión</Nav.Link>
+            <NavDropdown title="Mesas" id="nav-dropdown-mesas">
+              <NavDropdown.Item as={Link} to="/gestion/mesas">Gestión de Mesas</NavDropdown.Item>
+            </NavDropdown>
+            <NavDropdown title="Sectores" id="nav-dropdown-sectores">
+              <NavDropdown.Item as={Link} to="/gestion/sectores">Gestión de Sectores</NavDropdown.Item>
+            </NavDropdown>
             <NavDropdown title="Mozos" id="nav-dropdown">
               <NavDropdown.Item as={Link} to="/gestion/mozos">Gestión de Mozos</NavDropdown.Item>
               <NavDropdown.Divider />
