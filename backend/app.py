@@ -1,12 +1,22 @@
 from flask import Flask
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 from db import Base, engine, DATABASE_URL
 from routes import api_bp
 import os
 from sqlalchemy.exc import OperationalError
 
 app = Flask(__name__)
+
+# Configurar CORS para permitir peticiones desde el frontend
+CORS(app, resources={
+    r"/api/*": {
+        "origins": ["http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000", "http://127.0.0.1:3001"],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
 
 # Configuración de la base de datos para Flask-Migrate
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL

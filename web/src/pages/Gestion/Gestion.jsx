@@ -7,18 +7,32 @@ const Gestion = () => {
 
   const areasGestion = [
     {
+      title: 'Mesas',
+      description: 'Administra todas las mesas del restaurante: Alta, Baja y Modificación',
+      icon: '🪑',
+      path: '/gestion/mesas',
+      variant: 'primary'
+    },
+    {
+      title: 'Sectores',
+      description: 'Administra los sectores del salón: Alta, Baja y Modificación',
+      icon: '🏠️',
+      path: '/gestion/sectores',
+      variant: 'info'
+    },
+    {
       title: 'Mozos',
       description: 'Administra todos los mozos del sistema: Alta, Baja y Modificación',
-      icon: '👥',
+      icon: '👨‍🍳',
       path: '/gestion/mozos',
-      variant: 'primary'
+      variant: 'success'
     },
     {
       title: 'Productos',
       description: 'Administra productos, platos, postres y bebidas del menú',
       icon: '🍽️',
       path: '/gestion/productos',
-      variant: 'success',
+      variant: 'warning',
       disabled: true
     }
   ];
