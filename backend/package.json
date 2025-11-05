@@ -5,14 +5,18 @@
   "private": true,
   "scripts": {
     "dev": "python3 app.py",
-    "install:python": "pip3 install -r requirements.txt",
     "start": "python3 app.py",
+    "install:python": "pip3 install -r requirements.txt",
+    "seed": "python3 -m seed.insert_seed",
+    "seed:clean": "python3 -m seed.insert_seed --clean",
     "db:init": "flask db init",
-    "db:migrate": "flask db migrate",
+    "db:migrate": "flask db migrate -m",
     "db:upgrade": "flask db upgrade",
     "db:downgrade": "flask db downgrade",
     "db:history": "flask db history",
-    "db:current": "flask db current"
+    "db:current": "flask db current",
+    "db:reset": "flask db downgrade base && flask db upgrade head",
+    "db:revision": "flask db revision --autogenerate -m"
   }
 }
 
