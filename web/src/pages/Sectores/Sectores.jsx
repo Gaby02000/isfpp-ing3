@@ -7,6 +7,7 @@ import FiltrosSectores from './components/FiltrosSectores';
 import TablaSectores from './components/TablaSectores';
 import ModalSector from './components/ModalSector';
 import ModalBajaSector from './components/ModalBajaSector';
+import Paginacion from '../../components/common/Paginacion';
 
 const Sectores = () => {
   const { getSectores, createSector, updateSector, deleteSector, loading } = useSectorService();
@@ -16,6 +17,16 @@ const Sectores = () => {
   const [editingSector, setEditingSector] = useState(null);
   const [deletingSector, setDeletingSector] = useState(null);
   const [alert, setAlert] = useState(null);
+  
+  // Paginación
+  const [pagination, setPagination] = useState({
+    page: 1,
+    per_page: 10,
+    total: 0,
+    total_pages: 1,
+    has_next: false,
+    has_prev: false
+  });
   
   // Filtros y búsqueda
   const [filtros, setFiltros] = useState({
@@ -28,20 +39,46 @@ const Sectores = () => {
     loadSectores();
   }, []);
 
-  const loadSectores = async () => {
+  useEffect(() => {
+    // Recargar cuando cambian los filtros o la página
+    loadSectores();
+  }, [pagination.page, filtros.estado]);
+
+  const loadSectores = async (page = pagination.page) => {
     try {
-      const response = await getSectores();
-      setSectores(response.data || []);
+      const filters = {
+        page,
+        per_page: pagination.per_page,
+        estado: filtros.estado || undefined
+      };
+      
+      const response = await getSectores(filters);
+      
+      // Aplicar búsqueda local si hay texto de búsqueda
+      let sectoresData = response.data || [];
+      if (busqueda) {
+        const searchLower = busqueda.toLowerCase();
+        sectoresData = sectoresData.filter(sector => 
+          sector.numero.toString().includes(searchLower)
+        );
+      }
+      
+      setSectores(sectoresData);
+      
+      // Actualizar información de paginación
+      if (response.pagination) {
+        setPagination(response.pagination);
+      }
     } catch (error) {
-      setAlert({ variant: 'danger', message: error.message });
+      setAlert({ variant: 'danger', message: error.message || 'Error al cargar sectores' });
     }
   };
 
-  // Filtrar sectores localmente y por búsqueda
+  // Filtrar sectores localmente solo por búsqueda (filtros ya vienen del backend)
   const sectoresFiltrados = useMemo(() => {
     let filtered = [...sectores];
 
-    // Búsqueda por texto (número)
+    // Solo búsqueda local (filtros van al backend)
     if (busqueda) {
       const searchLower = busqueda.toLowerCase();
       filtered = filtered.filter(sector => 
@@ -49,19 +86,8 @@ const Sectores = () => {
       );
     }
 
-    // Filtros
-    if (filtros.numero) {
-      filtered = filtered.filter(sector => 
-        sector.numero.toString() === filtros.numero
-      );
-    }
-    if (filtros.estado) {
-      const mostrarBaja = filtros.estado === 'baja';
-      filtered = filtered.filter(sector => sector.baja === mostrarBaja);
-    }
-
     return filtered;
-  }, [sectores, filtros, busqueda]);
+  }, [sectores, busqueda]);
 
   const handleCreate = () => {
     setEditingSector(null);
@@ -113,6 +139,8 @@ const Sectores = () => {
 
   const handleFiltroChange = (campo, valor) => {
     setFiltros(prev => ({ ...prev, [campo]: valor || '' }));
+    // Resetear a página 1 cuando cambian los filtros
+    setPagination(prev => ({ ...prev, page: 1 }));
   };
 
   const handleLimpiarFiltros = () => {
@@ -121,6 +149,12 @@ const Sectores = () => {
       estado: ''
     });
     setBusqueda('');
+    setPagination(prev => ({ ...prev, page: 1 }));
+  };
+
+  const handlePageChange = (page) => {
+    setPagination(prev => ({ ...prev, page }));
+    loadSectores(page);
   };
 
   if (loading && sectores.length === 0) {
@@ -153,7 +187,7 @@ const Sectores = () => {
         busqueda={busqueda}
         onBusquedaChange={setBusqueda}
         onLimpiar={handleLimpiarFiltros}
-        totalSectores={sectores.length}
+        totalSectores={pagination.total}
         sectoresFiltrados={sectoresFiltrados.length}
       />
 
@@ -161,6 +195,14 @@ const Sectores = () => {
         sectores={sectoresFiltrados}
         onEdit={handleEdit}
         onDelete={handleDelete}
+      />
+
+      <Paginacion
+        currentPage={pagination.page}
+        totalPages={pagination.total_pages}
+        hasNext={pagination.has_next}
+        hasPrev={pagination.has_prev}
+        onPageChange={handlePageChange}
       />
 
       <ModalSector

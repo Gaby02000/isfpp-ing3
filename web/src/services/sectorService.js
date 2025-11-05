@@ -1,17 +1,26 @@
 import { useState, useCallback } from 'react';
 import axios from 'axios';
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8099';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:99';
 
 export const useSectorService = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const getSectores = useCallback(async (estado = null) => {
+  const getSectores = useCallback(async (filters = {}) => {
     try {
       setLoading(true);
-      const params = estado ? `?estado=${estado}` : '';
-      const response = await axios.get(`${BACKEND_URL}/api/sectores${params}`);
+      const params = new URLSearchParams();
+      
+      // Filtros
+      if (filters.estado) params.append('estado', filters.estado);
+      
+      // Parámetros de paginación
+      if (filters.page) params.append('page', filters.page);
+      if (filters.per_page) params.append('per_page', filters.per_page);
+      
+      const queryString = params.toString();
+      const response = await axios.get(`${BACKEND_URL}/api/sectores${queryString ? '?' + queryString : ''}`);
       return response.data;
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message || 'Error al obtener los sectores';

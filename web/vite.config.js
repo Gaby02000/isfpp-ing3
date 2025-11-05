@@ -7,6 +7,7 @@ export default defineConfig({
   server: {
     host: true,
     port: 3000,
+    strictPort: true, // Falla si el puerto está ocupado en lugar de usar otro
     watch: {
       usePolling: true
     }

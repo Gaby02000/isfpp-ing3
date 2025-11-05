@@ -8,6 +8,7 @@ import FiltrosMesas from './components/FiltrosMesas';
 import TablaMesas from './components/TablaMesas';
 import ModalMesa from './components/ModalMesa';
 import ModalBajaMesa from './components/ModalBajaMesa';
+import Paginacion from '../../components/common/Paginacion';
 
 const Mesas = () => {
   const { getMesas, createMesa, updateMesa, deleteMesa, loading } = useMesaService();
@@ -19,6 +20,16 @@ const Mesas = () => {
   const [editingMesa, setEditingMesa] = useState(null);
   const [deletingMesa, setDeletingMesa] = useState(null);
   const [alert, setAlert] = useState(null);
+  
+  // Paginación
+  const [pagination, setPagination] = useState({
+    page: 1,
+    per_page: 10,
+    total: 0,
+    total_pages: 1,
+    has_next: false,
+    has_prev: false
+  });
   
   // Filtros y búsqueda
   const [filtros, setFiltros] = useState({
@@ -34,10 +45,39 @@ const Mesas = () => {
     loadSectores();
   }, []);
 
-  const loadMesas = async (filters = {}) => {
+  useEffect(() => {
+    // Recargar cuando cambian los filtros o la página
+    loadMesas();
+  }, [pagination.page, filtros.sector_id, filtros.tipo, filtros.estado]);
+
+  const loadMesas = async (page = pagination.page) => {
     try {
+      const filters = {
+        page,
+        per_page: pagination.per_page,
+        sector_id: filtros.sector_id || undefined,
+        tipo: filtros.tipo || undefined,
+        estado: filtros.estado || undefined
+      };
+      
       const response = await getMesas(filters);
-      setMesas(response.data || []);
+      
+      // Aplicar búsqueda local si hay texto de búsqueda
+      let mesasData = response.data || [];
+      if (busqueda) {
+        const searchLower = busqueda.toLowerCase();
+        mesasData = mesasData.filter(mesa => 
+          mesa.numero.toString().includes(searchLower) ||
+          mesa.tipo.toLowerCase().includes(searchLower)
+        );
+      }
+      
+      setMesas(mesasData);
+      
+      // Actualizar información de paginación
+      if (response.pagination) {
+        setPagination(response.pagination);
+      }
     } catch (error) {
       setAlert({ variant: 'danger', message: error.message });
     }
@@ -52,11 +92,11 @@ const Mesas = () => {
     }
   };
 
-  // Filtrar mesas localmente y por búsqueda
+  // Filtrar mesas localmente solo por búsqueda (filtros ya vienen del backend)
   const mesasFiltradas = useMemo(() => {
     let filtered = [...mesas];
 
-    // Búsqueda por texto (número, tipo)
+    // Solo búsqueda local (filtros van al backend)
     if (busqueda) {
       const searchLower = busqueda.toLowerCase();
       filtered = filtered.filter(mesa => 
@@ -65,29 +105,8 @@ const Mesas = () => {
       );
     }
 
-    // Filtros
-    if (filtros.numero) {
-      filtered = filtered.filter(mesa => 
-        mesa.numero.toString() === filtros.numero
-      );
-    }
-    if (filtros.sector_id) {
-      filtered = filtered.filter(mesa => 
-        mesa.id_sector.toString() === filtros.sector_id
-      );
-    }
-    if (filtros.tipo) {
-      filtered = filtered.filter(mesa => 
-        mesa.tipo.toLowerCase() === filtros.tipo.toLowerCase()
-      );
-    }
-    if (filtros.estado) {
-      const mostrarBaja = filtros.estado === 'baja';
-      filtered = filtered.filter(mesa => mesa.baja === mostrarBaja);
-    }
-
     return filtered;
-  }, [mesas, filtros, busqueda]);
+  }, [mesas, busqueda]);
 
   const handleCreate = () => {
     setEditingMesa(null);
@@ -139,6 +158,8 @@ const Mesas = () => {
 
   const handleFiltroChange = (campo, valor) => {
     setFiltros(prev => ({ ...prev, [campo]: valor || '' }));
+    // Resetear a página 1 cuando cambian los filtros
+    setPagination(prev => ({ ...prev, page: 1 }));
   };
 
   const handleLimpiarFiltros = () => {
@@ -149,6 +170,12 @@ const Mesas = () => {
       estado: ''
     });
     setBusqueda('');
+    setPagination(prev => ({ ...prev, page: 1 }));
+  };
+
+  const handlePageChange = (page) => {
+    setPagination(prev => ({ ...prev, page }));
+    loadMesas(page);
   };
 
   if (loading && mesas.length === 0) {
@@ -182,7 +209,7 @@ const Mesas = () => {
         onBusquedaChange={setBusqueda}
         onLimpiar={handleLimpiarFiltros}
         sectores={sectores}
-        totalMesas={mesas.length}
+        totalMesas={pagination.total}
         mesasFiltradas={mesasFiltradas.length}
       />
 
@@ -190,6 +217,14 @@ const Mesas = () => {
         mesas={mesasFiltradas}
         onEdit={handleEdit}
         onDelete={handleDelete}
+      />
+
+      <Paginacion
+        currentPage={pagination.page}
+        totalPages={pagination.total_pages}
+        hasNext={pagination.has_next}
+        hasPrev={pagination.has_prev}
+        onPageChange={handlePageChange}
       />
 
       <ModalMesa

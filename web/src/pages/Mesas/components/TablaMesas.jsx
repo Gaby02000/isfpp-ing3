@@ -7,7 +7,6 @@ const TablaMesas = ({ mesas, onEdit, onDelete }) => {
       <Table striped bordered hover responsive>
         <thead>
           <tr>
-            <th>ID</th>
             <th>Número</th>
             <th>Tipo</th>
             <th>Comensales</th>
@@ -18,7 +17,7 @@ const TablaMesas = ({ mesas, onEdit, onDelete }) => {
         </thead>
         <tbody>
           <tr>
-            <td colSpan="7" className="text-center text-muted">
+            <td colSpan="6" className="text-center text-muted">
               No hay mesas registradas
             </td>
           </tr>
@@ -43,7 +42,6 @@ const TablaMesas = ({ mesas, onEdit, onDelete }) => {
       <tbody>
         {mesas.map((mesa) => (
           <tr key={mesa.id_mesa}>
-            <td>{mesa.id_mesa}</td>
             <td>{mesa.numero}</td>
             <td>{mesa.tipo}</td>
             <td>{mesa.cant_comensales}</td>

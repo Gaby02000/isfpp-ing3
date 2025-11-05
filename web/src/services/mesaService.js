@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import axios from 'axios';
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8099';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:99';
 
 export const useMesaService = () => {
   const [error, setError] = useState(null);
@@ -15,6 +15,10 @@ export const useMesaService = () => {
       if (filters.tipo) params.append('tipo', filters.tipo);
       if (filters.estado) params.append('estado', filters.estado);
       if (filters.ordenar_por) params.append('ordenar_por', filters.ordenar_por);
+      
+      // Parámetros de paginación
+      if (filters.page) params.append('page', filters.page);
+      if (filters.per_page) params.append('per_page', filters.per_page);
       
       const response = await axios.get(`${BACKEND_URL}/api/mesas/?${params.toString()}`);
       return response.data;
