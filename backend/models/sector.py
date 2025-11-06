@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, Boolean
 from sqlalchemy.orm import relationship
 from db import Base
 
+
 class Sector(Base):
     __tablename__ = 'sector'
     
@@ -11,6 +12,7 @@ class Sector(Base):
     
     # Relaciones
     mesas = relationship("Mesa", back_populates="sector")
+    mozos = relationship("Mozo", back_populates="sector")
     
     def __init__(self, numero, baja=False):
         self.numero = numero
