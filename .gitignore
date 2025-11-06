@@ -8,7 +8,7 @@ npm-debug.log*
 yarn.lock
 
 # Python
-__pycache__/
+backend/__pycache__/
 *.py[cod]
 *$py.class
 *.so
