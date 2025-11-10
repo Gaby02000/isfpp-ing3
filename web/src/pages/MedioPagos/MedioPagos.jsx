@@ -1,0 +1,10 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import { Container, Button, Alert } from 'react-bootstrap';
+import { useMeedioPagoService } from '../../services/mesaService';
+import Cargador from '../../components/common/Cargador';
+import PageHeader from '../../components/common/PageHeader';
+import FiltrosMedioPagos from './components/FiltrosMedioPagos';
+import TablaMedioPagos from './components/TablaMedioPagos';
+import ModalMedioPagos from './components/ModalMedioPagos';
+import ModalBajaMedioPagos from './components/ModalBajaMedioPagos';
+import Paginacion from '../../components/common/Paginacion';
