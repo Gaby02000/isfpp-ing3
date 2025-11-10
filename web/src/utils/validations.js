@@ -39,3 +39,28 @@ export const sectorValidationSchema = Yup.object({
     .integer('El número debe ser un entero')
 });
 
+export const productoValidationSchema = Yup.object({
+  nombre: Yup.string()
+    .required('El nombre es obligatorio')
+    .max(255, 'Máximo 255 caracteres'),
+  codigo: Yup.string()
+    .required('El código es obligatorio')
+    .max(50, 'Máximo 50 caracteres'),
+  precio: Yup.number()
+    .typeError('El precio debe ser un número')
+    .positive('Debe ser mayor a 0')
+    .required('El precio es obligatorio'),
+  id_seccion: Yup.number()
+    .typeError('Debe seleccionar una sección')
+    .required('Debe seleccionar una sección'),
+  descripcion: Yup.string()
+    .max(500, 'Máximo 500 caracteres')
+    .nullable(),
+});
+
+export const seccionValidationSchema = Yup.object({
+  nombre: Yup.string()
+    .required('El nombre de la sección es obligatorio')
+    .max(255, 'Máximo 255 caracteres'),
+  baja: Yup.boolean().nullable(),
+});
