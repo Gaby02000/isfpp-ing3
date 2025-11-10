@@ -32,8 +32,14 @@ const Gestion = () => {
       description: 'Administra productos, platos, postres y bebidas del menú',
       icon: '🍽️',
       path: '/gestion/productos',
-      variant: 'warning',
-      disabled: true
+      variant: 'warning'
+    },
+    {
+      title: 'Secciones',
+      description: 'Gestiona las secciones del menú y su organización',
+      icon: '📋',
+      path: '/gestion/secciones',
+      variant: 'secondary'
     }
   ];
 
@@ -51,11 +57,11 @@ const Gestion = () => {
       <Row>
         {areasGestion.map((area, index) => (
           <Col md={6} lg={4} key={index} className="mb-4">
-            <Card 
+            <Card
               className={`shadow-sm border-0 h-100 ${area.disabled ? 'opacity-50' : ''}`}
-              style={{ 
-                transition: 'transform 0.2s', 
-                cursor: area.disabled ? 'not-allowed' : 'pointer' 
+              style={{
+                transition: 'transform 0.2s',
+                cursor: area.disabled ? 'not-allowed' : 'pointer'
               }}
               onClick={() => !area.disabled && navigate(area.path)}
             >
@@ -67,9 +73,9 @@ const Gestion = () => {
                 <Card.Text className="text-muted flex-grow-1 mb-4">
                   {area.description}
                 </Card.Text>
-                <Button 
-                  variant={area.variant} 
-                  as={Link} 
+                <Button
+                  variant={area.variant}
+                  as={Link}
                   to={area.path}
                   className="w-100"
                   disabled={area.disabled}
@@ -86,4 +92,3 @@ const Gestion = () => {
 };
 
 export default Gestion;
-

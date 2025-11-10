@@ -3,11 +3,11 @@ import axios from 'axios';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8099';
 
-export const useMozoService = () => {
+export const useProductoService = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const getMozos = useCallback(async (filters = {}) => {
+  const getProductos = useCallback(async (filters = {}) => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
@@ -15,11 +15,12 @@ export const useMozoService = () => {
       if (filters.ordenar_por) params.append('ordenar_por', filters.ordenar_por);
       if (filters.page) params.append('page', filters.page);
       if (filters.per_page) params.append('per_page', filters.per_page);
+      if (filters.seccion_id) params.append('seccion_id', filters.seccion_id);
 
-      const response = await axios.get(`${BACKEND_URL}/api/mozos/?${params.toString()}`);
+      const response = await axios.get(`${BACKEND_URL}/api/productos/?${params.toString()}`);
       return response.data;
     } catch (error) {
-      const errorMessage = error.response?.data?.message || error.message || 'Error al obtener los mozos';
+      const errorMessage = error.response?.data?.message || error.message || 'Error al obtener los productos';
       setError(errorMessage);
       throw new Error(errorMessage);
     } finally {
@@ -27,13 +28,13 @@ export const useMozoService = () => {
     }
   }, []);
 
-  const getMozo = useCallback(async (id) => {
+  const getProducto = useCallback(async (id) => {
     try {
       setLoading(true);
-      const response = await axios.get(`${BACKEND_URL}/api/mozos/${id}`);
+      const response = await axios.get(`${BACKEND_URL}/api/productos/${id}`);
       return response.data;
     } catch (error) {
-      const errorMessage = error.response?.data?.message || error.message || 'Error al obtener el mozo';
+      const errorMessage = error.response?.data?.message || error.message || 'Error al obtener el producto';
       setError(errorMessage);
       throw new Error(errorMessage);
     } finally {
@@ -41,13 +42,13 @@ export const useMozoService = () => {
     }
   }, []);
 
-  const createMozo = useCallback(async (mozoData) => {
+  const createProducto = useCallback(async (productoData) => {
     try {
       setLoading(true);
-      const response = await axios.post(`${BACKEND_URL}/api/mozos/`, mozoData);
+      const response = await axios.post(`${BACKEND_URL}/api/productos/`, productoData);
       return response.data;
     } catch (error) {
-      const errorMessage = error.response?.data?.message || error.message || 'Error al crear el mozo';
+      const errorMessage = error.response?.data?.message || error.message || 'Error al crear el producto';
       setError(errorMessage);
       throw new Error(errorMessage);
     } finally {
@@ -55,13 +56,13 @@ export const useMozoService = () => {
     }
   }, []);
 
-  const updateMozo = useCallback(async (id, mozoData) => {
+  const updateProducto = useCallback(async (id, productoData) => {
     try {
       setLoading(true);
-      const response = await axios.put(`${BACKEND_URL}/api/mozos/${id}`, mozoData);
+      const response = await axios.put(`${BACKEND_URL}/api/productos/${id}`, productoData);
       return response.data;
     } catch (error) {
-      const errorMessage = error.response?.data?.message || error.message || 'Error al actualizar el mozo';
+      const errorMessage = error.response?.data?.message || error.message || 'Error al actualizar el producto';
       setError(errorMessage);
       throw new Error(errorMessage);
     } finally {
@@ -69,13 +70,13 @@ export const useMozoService = () => {
     }
   }, []);
 
-  const deleteMozo = useCallback(async (id) => {
+  const deleteProducto = useCallback(async (id) => {
     try {
       setLoading(true);
-      const response = await axios.delete(`${BACKEND_URL}/api/mozos/${id}`);
+      const response = await axios.delete(`${BACKEND_URL}/api/productos/${id}`);
       return response.data;
     } catch (error) {
-      const errorMessage = error.response?.data?.message || error.message || 'Error al dar de baja el mozo';
+      const errorMessage = error.response?.data?.message || error.message || 'Error al dar de baja el producto';
       setError(errorMessage);
       throw new Error(errorMessage);
     } finally {
@@ -84,11 +85,11 @@ export const useMozoService = () => {
   }, []);
 
   return {
-    getMozos,
-    getMozo,
-    createMozo,
-    updateMozo,
-    deleteMozo,
+    getProductos,
+    getProducto,
+    createProducto,
+    updateProducto,
+    deleteProducto,
     error,
     loading
   };
