@@ -64,3 +64,12 @@ export const seccionValidationSchema = Yup.object({
     .max(255, 'Máximo 255 caracteres'),
   baja: Yup.boolean().nullable(),
 });
+
+export const medioPagoValidationSchema = Yup.object({
+  nombre: Yup.string()
+    .required('El nombre del medio de pago es obligatorio') 
+    .max(100, 'Máximo 100 caracteres'),
+  descripcion: Yup.string()
+    .max(255, 'Máximo 255 caracteres')
+    .nullable(),
+});
