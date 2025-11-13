@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Container, Button, Alert } from 'react-bootstrap';
-import { useMeedioPagoService } from '../../services/mesaService';
+import { useMedioPagoService } from '../../services/medioPagoService';
 import Cargador from '../../components/common/Cargador';
 import PageHeader from '../../components/common/PageHeader';
 import FiltrosMedioPagos from './components/FiltrosMedioPagos';
@@ -10,8 +10,8 @@ import ModalBajaMedioPagos from './components/ModalBajaMedioPagos';
 import Paginacion from '../../components/common/Paginacion';
 
 const MedioPagos = () => {
-  const { getMedioPagos, createMedioPago, updateMedioPago, deleteMedioPago, loading } = useMeedioPagoService();
-  const [medioPagos, setMedioPagos] = useState([]); 
+  const { getMedioPagos, createMedioPago, updateMedioPago, deleteMedioPago, loading } = useMedioPagoService();
+  const [medioPagos, setMedioPagos] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [editingMedioPago, setEditingMedioPago] = useState(null);
@@ -29,6 +29,9 @@ const MedioPagos = () => {
     });
     // Filtros y búsqueda
     const [busqueda, setBusqueda] = useState('');
+    const [filtros, setFiltros] = useState({
+        estado: ''
+    });
 
     useEffect(() => {
         loadMedioPagos();
@@ -37,7 +40,7 @@ const MedioPagos = () => {
     useEffect(() => {
         // Recargar cuando cambian los filtros o la página
         loadMedioPagos();
-    }, [pagination.page, filtros.estados]);
+    }, [pagination.page, filtros.estado]);
     const loadMedioPagos = async (page = pagination.page) => {
         try {
             const filters = {   
@@ -95,7 +98,7 @@ const MedioPagos = () => {
     setShowDeleteModal(true);
   };
 
-  const handleSubmit = async (values, { setSubmitting }) => {
+  const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
       if (editingMedioPago) {
         await updateMedioPago(editingMedioPago.id_medio_pago, values);
@@ -135,8 +138,7 @@ const MedioPagos = () => {
 
     const handleLimpiarFiltros = () => {
         setFiltros({
-            nombre: '',
-            estado: '',
+            estado: ''
         });
         setBusqueda('');
         setPagination(prev => ({ ...prev, page: 1 }));

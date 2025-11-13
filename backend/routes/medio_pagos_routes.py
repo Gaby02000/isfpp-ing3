@@ -189,7 +189,13 @@ def modificar_medio_pago(id_medio_pago):
                     'status': 'error',
                     'message': f'Ya existe un medio de pago con ese nombre"]'
                 }), 400
-        
+
+        # Aplicar los cambios
+        if 'nombre' in data:
+            medio_pago.nombre = data['nombre']
+        if 'descripcion' in data:
+            medio_pago.descripcion = data['descripcion']
+
         session.commit()
 
         return jsonify({

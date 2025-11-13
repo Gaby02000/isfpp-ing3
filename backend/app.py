@@ -30,7 +30,7 @@ db = SQLAlchemy(app, model_class=Base)
 
 # Importar todos los modelos para que Flask-Migrate los detecte
 # Los modelos deben usar el Base de db.py, no db.Model
-from models import Seccion, Producto, Plato, Postre, Bebida, Sector, Mesa
+from models import Seccion, Producto, Plato, Postre, Bebida, Sector, Mesa, MedioPago, Mozo
 
 # Configurar Flask-Migrate
 # Flask-Migrate trabajará con el metadata de los modelos que usan Base

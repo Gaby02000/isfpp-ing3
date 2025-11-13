@@ -57,9 +57,11 @@ const FiltrosMedioPagos = ({
                       <Button variant="outline-secondary" size="sm" onClick={onLimpiar}>
                         Limpiar Filtros
                       </Button>
-                      <Badge bg="info" className="ms-2">
-                        {mesasFiltradas} de {totalMesas} mesas
-                      </Badge>
+                      {mediosPagosFiltrados !== undefined && totalMediosPagos !== undefined && (
+                        <Badge bg="info" className="ms-2">
+                          {mediosPagosFiltrados} de {totalMediosPagos} medios de pago
+                        </Badge>
+                      )}
                     </Col>
                   </Row>
                 </div>
