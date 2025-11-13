@@ -66,7 +66,13 @@ CREATE TABLE IF NOT EXISTS bebida (
         ON DELETE CASCADE
 );
 
-
+-- Nueva tabla MEDIO PAGO
+CREATE TABLE IF NOT EXISTS medio_pago (
+    id_medio_pago SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL UNIQUE,
+    descripcion VARCHAR(255),
+    baja BOOLEAN DEFAULT false
+);
 
 
 -- Nueva tabla MOZO
