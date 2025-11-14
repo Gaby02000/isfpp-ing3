@@ -45,7 +45,7 @@ const Gestion = () => {
       title: 'Medios de Pago',
       description: 'Administra los medios de pago disponibles en el sistema',
       icon: '💳',
-      path: '/gestion/medios_pago',
+      path: '/gestion/medio-pagos',
       variant: 'light'
     }
   ];

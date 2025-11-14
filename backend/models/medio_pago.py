@@ -11,7 +11,7 @@ class MedioPago(Base):
     baja = Column(Boolean, default=False)
     
     # Relaciones
-    pagos = relationship("Pago", back_populates="medio_pago")
+    # pagos = relationship("Pago", back_populates="medio_pago")  # TODO: crear modelo Pago cuando se defina
     
     def __init__(self, nombre, descripcion=None, baja=False):
         self.nombre = nombre

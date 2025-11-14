@@ -156,7 +156,7 @@ const MedioPagos = () => {
         />  
 
         {alert && (
-            <Alert variant={alert.variant} dismissible onClose={() => setAlert(null)}>
+            <Alert variant={alert.type} dismissible onClose={() => setAlert(null)}>
                       {alert.message}
                     </Alert>
                   )}
