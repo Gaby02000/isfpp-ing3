@@ -1,3 +1,13 @@
+CREATE TABLE IF NOT EXISTS cliente (
+    id_cliente SERIAL PRIMARY KEY,
+    documento VARCHAR(50) NOT NULL UNIQUE,
+    nombre VARCHAR(100) NOT NULL,
+    apellido VARCHAR(100) NOT NULL,
+    num_telefono VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL, 
+    baja BOOLEAN DEFAULT FALSE
+);
+
 CREATE TABLE IF NOT EXISTS seccion (
     id_seccion SERIAL PRIMARY KEY,
     nombre VARCHAR(255) NOT NULL UNIQUE,
@@ -114,3 +124,6 @@ INSERT INTO mozo (documento, nombre_apellido, direccion, telefono, id_sector, ba
 ('20123456', 'Juan Perez', 'Calle Falsa 123', '111222333', 1, FALSE),
 ('20333444', 'María Gómez', 'Avenida Siempre Viva 742', '222333444', 2, FALSE);
 
+-- Inserts de ejemplo para CLIENTE (idempotente)
+INSERT INTO cliente (documento, nombre, apellido, num_telefono, email, baja) VALUES
+('17555444', 'Marcelo', 'Santander', '2804000456', 'santander@gmail.com', FALSE);
