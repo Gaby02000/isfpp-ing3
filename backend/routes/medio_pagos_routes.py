@@ -89,7 +89,7 @@ def crear_medio_pago():
         #validar campos obligatorios
         campos_requeridos = ['nombre']
         for campo in campos_requeridos:
-            if campo not in data or data:
+            if campo not in data or not data[campo]:
                 return jsonify({
                     'status': 'error',
                     'message': f'El campo "{campo}" es requerido'
