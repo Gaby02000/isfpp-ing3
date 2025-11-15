@@ -24,6 +24,11 @@ const NavegacionInferior = () => {
       label: 'Mesas'
     },
     {
+      path: '/gestion/sectores',
+      icon: '🏠️',
+      label: 'Sectores'
+    },
+    {
       path: '/gestion/mozos',
       icon: '👨‍🍳',
       label: 'Mozos'
@@ -32,6 +37,11 @@ const NavegacionInferior = () => {
       path: '/gestion/productos',
       icon: '🍽️',
       label: 'Productos'
+    },
+    {
+      path: '/gestion/secciones',
+      icon: '📋',
+      label: 'Secciones'
     },
     {
       path: '/gestion/medio-pagos',
@@ -56,10 +66,21 @@ const NavegacionInferior = () => {
       style={{ 
         height: '60px',
         paddingTop: '0',
-        paddingBottom: '0'
+        paddingBottom: '0',
+        overflowX: 'auto',
+        overflowY: 'hidden',
+        WebkitOverflowScrolling: 'touch'
       }}
     >
-      <Nav className="w-100 d-flex justify-content-around align-items-center" style={{ height: '100%' }}>
+      <Nav 
+        className="d-flex align-items-center" 
+        style={{ 
+          height: '100%',
+          minWidth: 'max-content',
+          paddingLeft: '10px',
+          paddingRight: '10px'
+        }}
+      >
         {navItems.map((item) => {
           const active = isActive(item);
           return (
@@ -71,16 +92,18 @@ const NavegacionInferior = () => {
                 active ? 'text-primary' : 'text-muted'
               }`}
               style={{
-                minWidth: '60px',
+                minWidth: '70px',
+                maxWidth: '90px',
                 height: '100%',
                 padding: '4px 8px',
                 textDecoration: 'none',
                 transition: 'all 0.2s',
-                borderTop: active ? '3px solid #0d6efd' : '3px solid transparent'
+                borderTop: active ? '3px solid #0d6efd' : '3px solid transparent',
+                flexShrink: 0
               }}
             >
               <span style={{ fontSize: '1.5rem', lineHeight: '1' }}>{item.icon}</span>
-              <small style={{ fontSize: '0.7rem', marginTop: '2px', fontWeight: active ? '600' : '400' }}>
+              <small style={{ fontSize: '0.65rem', marginTop: '2px', fontWeight: active ? '600' : '400', textAlign: 'center' }}>
                 {item.label}
               </small>
             </Nav.Link>
