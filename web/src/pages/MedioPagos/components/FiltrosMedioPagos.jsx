@@ -46,8 +46,8 @@ const FiltrosMedioPagos = ({
                             onChange={(e) => onFiltroChange('estado', e.target.value)}
                         >
                             <option value="">Todos los estados</option>
-                            <option value="activo">Activo</option>
-                            <option value="inactivo">Inactivo</option>
+                            <option value="activa">Activo</option>
+                            <option value="baja">Inactivo</option>
                         </Form.Select>
                     </Form.Group>
                 </Col>
