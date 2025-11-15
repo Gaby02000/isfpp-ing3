@@ -67,7 +67,7 @@ const MedioPagos = () => {
         setPagination(response.pagination);
       }
         } catch (error) {
-           setAlert({ type: 'danger', message: error.message });
+           setAlert({ variant: 'danger', message: error.message });
         }
     };
 
@@ -102,17 +102,17 @@ const MedioPagos = () => {
     try {
       if (editingMedioPago) {
         await updateMedioPago(editingMedioPago.id_medio_pago, values);
-        setAlert({ type: 'success', message: 'Medio de pago actualizado correctamente.' });
+        setAlert({ variant: 'success', message: 'Medio de pago actualizado correctamente.' });
       } else {
         await createMedioPago(values);
-        setAlert({ type: 'success', message: 'Medio de pago creado correctamente.' });
+        setAlert({ variant: 'success', message: 'Medio de pago creado correctamente.' });
       }
         setShowModal(false);
         resetForm();
         loadMedioPagos();
         setTimeout(() => setAlert(null), 3000);
     } catch (error) {
-      setAlert({ type: 'danger', message: error.message });
+      setAlert({ variant: 'danger', message: error.message });
     } finally {
         setSubmitting(false);
     }
@@ -121,13 +121,13 @@ const MedioPagos = () => {
   const handleConfirmDelete = async () => {
     try {
       await deleteMedioPago(deletingMedioPago.id_medio_pago);
-      setAlert({ type: 'success', message: 'Medio de pago eliminado correctamente.' });
+      setAlert({ variant: 'success', message: 'Medio de pago eliminado correctamente.' });
         setShowDeleteModal(false);
         setDeletingMedioPago(null);
         loadMedioPagos();
         setTimeout(() => setAlert(null), 3000);
     } catch (error) {
-      setAlert({ type: 'danger', message: error.message });
+      setAlert({ variant: 'danger', message: error.message });
     };
     };
     const handleFiltroChange = (campo, valor) => {
@@ -150,22 +150,19 @@ const MedioPagos = () => {
     };
 
   return (
-    <Container className="py-4">
-        <PageHeader title="Medios de Pago" 
+    <Container fluid className="py-4">
+      <PageHeader 
+        title="Medios de Pago" 
         backPath="/gestion"
-        />  
+        onCreate={handleCreate}
+        createLabel="+ Nuevo Medio de Pago"
+      />  
 
-        {alert && (
-            <Alert variant={alert.type} dismissible onClose={() => setAlert(null)}>
-                      {alert.message}
-                    </Alert>
-                  )}
-            <div className="d-flex justify-content-between align-items-center mb-3">
-                <h2>Listado de Medios de Pago</h2>
-                <Button variant="success" onClick={handleCreate}>
-                    Nuevo Medio de Pago
-                </Button>
-            </div>
+      {alert && (
+        <Alert variant={alert.variant} dismissible onClose={() => setAlert(null)} className="mb-3">
+          {alert.message}
+        </Alert>
+      )}
 
             <FiltrosMedioPagos
                 filtros={filtros}

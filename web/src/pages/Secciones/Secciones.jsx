@@ -4,6 +4,7 @@ import { useSeccionService } from '../../services/seccionService';
 import Cargador from '../../components/common/Cargador';
 import PageHeader from '../../components/common/PageHeader';
 import Paginacion from '../../components/common/Paginacion';
+import FiltroSecciones from './components/FiltroSecciones';
 import TablaSecciones from './components/TablaSecciones';
 import ModalSeccion from './components/ModalSecciones';
 import ModalBajaSeccion from './components/ModalBajaSeccion';
@@ -27,6 +28,9 @@ const Secciones = () => {
     has_prev: false
   });
 
+  const [filtros, setFiltros] = useState({
+    activos: ''
+  });
   const [busqueda, setBusqueda] = useState('');
 
   useEffect(() => {
@@ -127,6 +131,17 @@ const Secciones = () => {
     }
   };
 
+  const handleFiltroChange = (campo, valor) => {
+    setFiltros(prev => ({ ...prev, [campo]: valor || '' }));
+    setPagination(prev => ({ ...prev, page: 1 }));
+  };
+
+  const handleLimpiarFiltros = () => {
+    setFiltros({ activos: '' });
+    setBusqueda('');
+    setPagination(prev => ({ ...prev, page: 1 }));
+  };
+
   const handlePageChange = (page) => {
     setPagination(prev => ({ ...prev, page }));
     loadSecciones(page);
@@ -138,33 +153,28 @@ const Secciones = () => {
 
   return (
     <Container fluid className="py-4">
-      <PageHeader title="Gestión de Secciones" backPath="/gestion" />
+      <PageHeader 
+        title="Gestión de Secciones" 
+        backPath="/gestion"
+        onCreate={handleCreate}
+        createLabel="+ Nueva Sección"
+      />
 
       {alert && (
-        <Alert variant={alert.variant} dismissible onClose={() => setAlert(null)}>
+        <Alert variant={alert.variant} dismissible onClose={() => setAlert(null)} className="mb-3">
           {alert.message}
         </Alert>
       )}
 
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2>Listado de Secciones</h2>
-        <Button variant="primary" onClick={handleCreate}>
-          + Nueva Sección
-        </Button>
-      </div>
-
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <input
-          type="text"
-          className="form-control w-25"
-          placeholder="Buscar sección..."
-          value={busqueda}
-          onChange={(e) => setBusqueda(e.target.value)}
-        />
-        <span className="text-muted">
-          {seccionesFiltradas.length} resultados
-        </span>
-      </div>
+      <FiltroSecciones
+        filtros={filtros}
+        onFiltroChange={handleFiltroChange}
+        busqueda={busqueda}
+        onBusquedaChange={setBusqueda}
+        onLimpiar={handleLimpiarFiltros}
+        totalSecciones={pagination.total}
+        seccionesFiltradas={seccionesFiltradas.length}
+      />
 
       <TablaSecciones
         secciones={seccionesFiltradas}

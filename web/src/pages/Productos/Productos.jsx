@@ -177,20 +177,18 @@ const Productos = () => {
 
   return (
     <Container fluid className="py-4">
-      <PageHeader title="Gestión de Productos" backPath="/gestion" />
+      <PageHeader 
+        title="Gestión de Productos" 
+        backPath="/gestion"
+        onCreate={handleCreate}
+        createLabel="+ Nuevo Producto"
+      />
 
       {alert && (
-        <Alert variant={alert.variant} dismissible onClose={() => setAlert(null)}>
+        <Alert variant={alert.variant} dismissible onClose={() => setAlert(null)} className="mb-3">
           {alert.message}
         </Alert>
       )}
-
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2>Listado de Productos</h2>
-        <Button variant="primary" onClick={handleCreate}>
-          + Nuevo Producto
-        </Button>
-      </div>
 
       <FiltrosProductos
         filtros={filtros}

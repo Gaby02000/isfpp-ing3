@@ -178,20 +178,18 @@ const Mozos = () => {
 
   return (
     <Container fluid className="py-4">
-      <PageHeader title="Gestión de Mozos" backPath="/gestion" />
+      <PageHeader 
+        title="Gestión de Mozos" 
+        backPath="/gestion"
+        onCreate={handleCreate}
+        createLabel="+ Nuevo Mozo"
+      />
 
       {alert && (
-        <Alert variant={alert.variant} dismissible onClose={() => setAlert(null)}>
+        <Alert variant={alert.variant} dismissible onClose={() => setAlert(null)} className="mb-3">
           {alert.message}
         </Alert>
       )}
-
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2>Listado de Mozos</h2>
-        <Button variant="primary" onClick={handleCreate}>
-          + Nuevo Mozo
-        </Button>
-      </div>
 
       <FiltrosMozos
         filtros={filtros}

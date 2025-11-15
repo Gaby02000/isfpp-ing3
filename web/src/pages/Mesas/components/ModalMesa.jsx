@@ -44,6 +44,7 @@ const ModalMesa = ({
                     touched={touched.numero}
                     error={errors.numero}
                     placeholder="Ej: 1, 2, 3..."
+                    disabled={!!editingMesa}
                   />
                 </Col>
                 <Col md={6}>
