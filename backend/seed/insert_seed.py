@@ -13,7 +13,7 @@ sys.path.insert(0, backend_dir)
 from db import SessionLocal, engine, Base
 from models import (
     Seccion, Producto, Plato, Postre, Bebida,
-    Sector, Mesa
+    Sector, Mesa, MedioPago
 )
 
 # Importar seeders
@@ -21,6 +21,7 @@ from seed.sector.seed_sector import seed_sectores
 from seed.seccion.seed_seccion import seed_secciones
 from seed.producto.seed_producto import seed_productos
 from seed.mesa.seed_mesa import seed_mesas
+from seed.mediopago.seed_medio_pago import seed_medio_pago
 
 
 def limpiar_datos(session):
@@ -34,6 +35,7 @@ def limpiar_datos(session):
         session.query(Bebida).delete()
         session.query(Producto).delete()
         session.query(Seccion).delete()
+        session.query(MedioPago).delete()
         session.commit()
         print("✅ Datos limpiados")
     except Exception as e:
@@ -55,13 +57,14 @@ def main():
     try:
         # Limpiar datos existentes (opcional - comentar si no quieres borrar)
         limpiar_datos(session)
-        
+
         # Crear datos en orden de dependencias
         sectores = seed_sectores(session)
         secciones = seed_secciones(session)
         productos = seed_productos(session, secciones)
         mesas = seed_mesas(session, sectores)
-        
+        medios_pago = seed_medio_pago(session)
+
         print("=" * 50)
         print("✅ ¡Carga de datos completada exitosamente!")
         print(f"📊 Resumen:")
@@ -69,6 +72,7 @@ def main():
         print(f"   - Secciones: {len(secciones)}")
         print(f"   - Productos: {len(productos)}")
         print(f"   - Mesas: {len(mesas)}")
+        print(f"   - Medios de Pago: {len(medios_pago)}")
         
     except Exception as e:
         session.rollback()

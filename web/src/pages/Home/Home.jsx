@@ -15,9 +15,10 @@ const Home = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const mozos = await getMozos();
+        const response = await getMozos();
+        const mozosData = response.data || response;  // extraer data si existe, sino usar response directo
         setStats({
-          totalMozos: Array.isArray(mozos) ? mozos.length : 0,
+          totalMozos: Array.isArray(mozosData) ? mozosData.length : 0,
           loading: false
         });
       } catch (error) {

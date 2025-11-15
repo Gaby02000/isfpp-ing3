@@ -8,6 +8,7 @@ import Mesas from './pages/Mesas/Mesas';
 import Sectores from './pages/Sectores/Sectores';
 import Productos from './pages/Productos/Productos';
 import Secciones from './pages/Secciones/Secciones';
+import MedioPagos from './pages/MedioPagos/MedioPagos';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
           <Route path="/gestion/sectores" element={<Sectores />} />
           <Route path="/gestion/productos" element={<Productos />} />
           <Route path="/gestion/secciones" element={<Secciones/>} />
+          <Route path="/gestion/medio-pagos" element={<MedioPagos />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Plantilla>
