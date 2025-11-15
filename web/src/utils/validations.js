@@ -44,3 +44,30 @@ export const sectorValidationSchema = Yup.object({
     .integer('El número debe ser un entero')
 });
 
+export const clienteValidationSchema = Yup.object({
+  documento: Yup.string()
+    .required('El documento es obligatorio')
+    .matches(/^[0-9]+$/, "El documento debe contener solo números")
+    .min(7, 'Debe tener al menos 7 dígitos')
+    .max(50, 'Máximo 50 caracteres'), // Límite de tu modelo
+  
+  nombre: Yup.string()
+    .required('El nombre es obligatorio')
+    .min(2, 'El nombre debe tener al menos 2 caracteres')
+    .max(100, 'Máximo 100 caracteres'), // Límite de tu modelo
+
+  apellido: Yup.string()
+    .required('El apellido es obligatorio')
+    .min(2, 'El apellido debe tener al menos 2 caracteres')
+    .max(100, 'Máximo 100 caracteres'), // Límite de tu modelo
+
+  num_telefono: Yup.string()
+    .required('El teléfono es obligatorio')
+    .matches(/^[0-9]+$/, 'El teléfono debe contener solo números')
+    .max(50, 'Máximo 50 caracteres'), // Límite de tu modelo
+
+  email: Yup.string()
+    .email('Formato de email inválido')
+    .required('El email es obligatorio')
+    .max(100, 'Máximo 100 caracteres'), // Límite de tu modelo
+});

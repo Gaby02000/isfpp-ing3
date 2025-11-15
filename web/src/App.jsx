@@ -9,6 +9,7 @@ import BajaMozo from './pages/Mozos/BajaMozo';
 import ModificarMozo from './pages/Mozos/ModificarMozo';
 import Mesas from './pages/Mesas/Mesas';
 import Sectores from './pages/Sectores/Sectores';
+import Clientes from './pages/Clientes/Clientes';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
           <Route path="/gestion/mozos/modificar" element={<ModificarMozo />} />
           <Route path="/gestion/mesas" element={<Mesas />} />
           <Route path="/gestion/sectores" element={<Sectores />} />
+          <Route path="/gestion/clientes" element={<Clientes />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Plantilla>

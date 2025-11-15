@@ -34,6 +34,15 @@ const Gestion = () => {
       path: '/gestion/productos',
       variant: 'warning',
       disabled: true
+    },
+    {
+      title: 'Clientes',
+      descripcion: 'Administra los clientes del sistema: Alta, Baja y Modificación',
+      icon: '👥',
+      path: 'gestion/clientes',
+      variant: 'success'
+
+
     }
   ];
 
