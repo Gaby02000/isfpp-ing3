@@ -15,6 +15,9 @@ const BarraNavegacion = () => {
             <NavDropdown title="Mesas" id="nav-dropdown-mesas">
               <NavDropdown.Item as={Link} to="/gestion/mesas">Gestión de Mesas</NavDropdown.Item>
             </NavDropdown>
+            <NavDropdown title="Clientes" id="nav-dropdown-clientes">
+              <NavDropdown.Item as={Link} to="/gestion/clientes">Gestión de Clientes</NavDropdown.Item>
+            </NavDropdown>
             <NavDropdown title="Sectores" id="nav-dropdown-sectores">
               <NavDropdown.Item as={Link} to="/gestion/sectores">Gestión de Sectores</NavDropdown.Item>
             </NavDropdown>
