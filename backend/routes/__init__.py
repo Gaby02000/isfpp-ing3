@@ -15,4 +15,4 @@ api_bp.register_blueprint(mesa_bp, url_prefix='/mesas')
 api_bp.register_blueprint(mozo_bp, url_prefix='/mozos')
 api_bp.register_blueprint(cliente_bp, url_prefix='/clientes')
 api_bp.register_blueprint(medio_pagos_bp, url_prefix='/medio-pagos')
-api_bp.register_blueprint(mozo_bp, url_prefix='/mozos')
+
