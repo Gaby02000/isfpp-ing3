@@ -47,6 +47,11 @@ const NavegacionInferior = () => {
       path: '/gestion/medio-pagos',
       icon: '💳',
       label: 'Pagos'
+    },
+    {
+      path: '/gestion/clientes',
+      icon: '👥',
+      label: 'clientes'
     }
   ];
 
