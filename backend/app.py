@@ -30,23 +30,21 @@ db = SQLAlchemy(app, model_class=Base)
 
 # Importar todos los modelos para que Flask-Migrate los detecte
 # Los modelos deben usar el Base de db.py, no db.Model
-from models import Seccion, Producto, Plato, Postre, Bebida, Sector, Mesa
+from models import Seccion, Producto, Plato, Postre, Bebida, Sector, Mesa, MedioPago, Mozo
 
 # Configurar Flask-Migrate
 # Flask-Migrate trabajará con el metadata de los modelos que usan Base
 migrate = Migrate(app, db, directory='migrations')
 
-# Solo crear tablas automáticamente en desarrollo (no recomendado para producción)
-# En producción, usar migraciones: flask db upgrade
-# Manejar errores de conexión de forma elegante
-if os.getenv('FLASK_ENV') != 'production':
-    try:
-        Base.metadata.create_all(bind=engine)
-        print("✅ Tablas creadas/verificadas correctamente")
-    except OperationalError as e:
-        print(f"⚠️  No se pudo conectar a la base de datos: {e}")
-        print("💡 Asegúrate de que PostgreSQL esté corriendo y la DATABASE_URL sea correcta")
-        print(f"   DATABASE_URL actual: {DATABASE_URL}")
+# NO crear tablas automáticamente - usar migraciones en su lugar
+# if os.getenv('FLASK_ENV') != 'production':
+#     try:
+#         Base.metadata.create_all(bind=engine)
+#         print("✅ Tablas creadas/verificadas correctamente")
+#     except OperationalError as e:
+#         print(f"⚠️  No se pudo conectar a la base de datos: {e}")
+#         print("💡 Asegúrate de que PostgreSQL esté corriendo y la DATABASE_URL sea correcta")
+#         print(f"   DATABASE_URL actual: {DATABASE_URL}")
 
 app.register_blueprint(api_bp, url_prefix='/api')
 

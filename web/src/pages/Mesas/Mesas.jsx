@@ -201,21 +201,16 @@ const Mesas = () => {
     <Container fluid className="py-4">
       <PageHeader 
         title="Gestión de Mesas" 
-        backPath="/gestion" 
+        backPath="/gestion"
+        onCreate={handleCreate}
+        createLabel="+ Nueva Mesa"
       />
 
       {alert && (
-        <Alert variant={alert.variant} dismissible onClose={() => setAlert(null)}>
+        <Alert variant={alert.variant} dismissible onClose={() => setAlert(null)} className="mb-3">
           {alert.message}
         </Alert>
       )}
-
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2>Listado de Mesas</h2>
-        <Button variant="primary" onClick={handleCreate}>
-          + Nueva Mesa
-        </Button>
-      </div>
 
              <FiltrosMesas
                filtros={filtros}

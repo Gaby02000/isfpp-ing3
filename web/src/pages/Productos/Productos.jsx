@@ -1,25 +1,25 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Container, Button, Alert } from 'react-bootstrap';
-import { useMozoService } from '../../services/mozoService';
-import { useSectorService } from '../../services/sectorService';
+import { useProductoService } from '../../services/productoService';
+import { useSeccionService } from '../../services/seccionService';
 import Cargador from '../../components/common/Cargador';
 import PageHeader from '../../components/common/PageHeader';
-import FiltrosMozos from './components/FiltrosMozos';
-import TablaMozos from './components/TablaMozos';
-import ModalMozo from './components/ModalMozos';
-import ModalBajaMozo from './components/ModalBajaMozo';
+import FiltrosProductos from './components/FiltrosProductos';
+import TablaProductos from './components/TablaProductos';
+import ModalProducto from './components/ModalProductos';
+import ModalBajaProducto from './components/ModalBajaProducto';
 import Paginacion from '../../components/common/Paginacion';
 
-const Mozos = () => {
-  const { getMozos, createMozo, updateMozo, deleteMozo, loading } = useMozoService();
-  const { getTodosSectores } = useSectorService();
+const Productos = () => {
+  const { getProductos, createProducto, updateProducto, deleteProducto, loading } = useProductoService();
+  const { getTodasSecciones } = useSeccionService();
 
-  const [mozos, setMozos] = useState([]);
-  const [sectores, setSectores] = useState([]);
+  const [productos, setProductos] = useState([]);
+  const [secciones, setSecciones] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [editingMozo, setEditingMozo] = useState(null);
-  const [deletingMozo, setDeletingMozo] = useState(null);
+  const [editingProducto, setEditingProducto] = useState(null);
+  const [deletingProducto, setDeletingProducto] = useState(null);
   const [alert, setAlert] = useState(null);
 
   const [pagination, setPagination] = useState({
@@ -33,41 +33,41 @@ const Mozos = () => {
 
   const [filtros, setFiltros] = useState({
     activos: '',
-    sector_id: ''
+    seccion_id: ''
   });
 
   const [busqueda, setBusqueda] = useState('');
 
   useEffect(() => {
-    loadMozos();
-    loadSectores();
+    loadProductos();
+    loadSecciones();
   }, []);
 
   useEffect(() => {
-    loadMozos();
-  }, [pagination.page, filtros.activos, filtros.sector_id]);
+    loadProductos();
+  }, [pagination.page, filtros.activos, filtros.seccion_id]);
 
-  const loadMozos = async (page = pagination.page) => {
+  const loadProductos = async (page = pagination.page) => {
     try {
       const filters = {
         page,
         per_page: pagination.per_page,
         activos: filtros.activos || undefined,
-        sector_id: filtros.sector_id || undefined
+        seccion_id: filtros.seccion_id || undefined
       };
 
-      const response = await getMozos(filters);
-      let mozosData = response.data || [];
+      const response = await getProductos(filters);
+      let productosData = response.data || [];
 
       if (busqueda) {
         const searchLower = busqueda.toLowerCase();
-        mozosData = mozosData.filter(m =>
-          m.nombre_apellido.toLowerCase().includes(searchLower) ||
-          m.documento.toString().includes(searchLower)
+        productosData = productosData.filter(p =>
+          p.nombre.toLowerCase().includes(searchLower) ||
+          p.codigo.toLowerCase().includes(searchLower)
         );
       }
 
-      setMozos(mozosData);
+      setProductos(productosData);
 
       if (response.pagination) {
         setPagination(response.pagination);
@@ -77,64 +77,63 @@ const Mozos = () => {
     }
   };
 
-  const loadSectores = async () => {
+  const loadSecciones = async () => {
     try {
-      const response = await getTodosSectores();
-      setSectores(response.data || []);
+      const response = await getTodasSecciones();
+      setSecciones(response.data || []);
     } catch {
-      setSectores([]);
+      setSecciones([]);
     }
   };
 
-  const mozosFiltrados = useMemo(() => {
-    let filtered = [...mozos];
+  const productosFiltrados = useMemo(() => {
+    let filtered = [...productos];
     if (busqueda) {
       const searchLower = busqueda.toLowerCase();
-      filtered = filtered.filter(m =>
-        m.nombre_apellido.toLowerCase().includes(searchLower) ||
-        m.documento.toString().includes(searchLower)
+      filtered = filtered.filter(p =>
+        p.nombre.toLowerCase().includes(searchLower) ||
+        p.codigo.toLowerCase().includes(searchLower)
       );
     }
     return filtered;
-  }, [mozos, busqueda]);
+  }, [productos, busqueda]);
 
   const handleCreate = () => {
-    setEditingMozo(null);
+    setEditingProducto(null);
     setShowModal(true);
   };
 
-  const handleEdit = (mozo) => {
-    setEditingMozo(mozo);
+  const handleEdit = (producto) => {
+    setEditingProducto(producto);
     setShowModal(true);
   };
 
-  const handleDelete = (mozo) => {
-    setDeletingMozo(mozo);
+  const handleDelete = (producto) => {
+    setDeletingProducto(producto);
     setShowDeleteModal(true);
   };
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
-    console.log("handleSubmit ejecutado", values);
     try {
       const payload = {
-        documento: values.documento,
-        nombre_apellido: values.nombre_apellido,
-        direccion: values.direccion,
-        telefono: values.telefono,
-        id_sector: values.id_sector || null
+        codigo: values.codigo,
+        nombre: values.nombre,
+        descripcion: values.descripcion,
+        precio: values.precio,
+        id_seccion: values.id_seccion || null
       };
 
-      if (editingMozo) {
-        await updateMozo(editingMozo.id, payload);
-        setAlert({ variant: 'success', message: 'Mozo modificado exitosamente' });
+      if (editingProducto) {
+        await updateProducto(editingProducto.id_producto, payload);
+        setAlert({ variant: 'success', message: 'Producto modificado exitosamente' });
       } else {
-        await createMozo(payload);
-        setAlert({ variant: 'success', message: 'Mozo creado exitosamente' });
+        await createProducto(payload);
+        setAlert({ variant: 'success', message: 'Producto creado exitosamente' });
       }
 
       setShowModal(false);
       resetForm();
-      loadMozos();
+      loadProductos();
       setTimeout(() => setAlert(null), 3000);
     } catch (error) {
       setAlert({ variant: 'danger', message: error.message });
@@ -145,11 +144,11 @@ const Mozos = () => {
 
   const handleConfirmDelete = async () => {
     try {
-      await deleteMozo(deletingMozo.id);
-      setAlert({ variant: 'success', message: 'Mozo dado de baja exitosamente' });
+      await deleteProducto(deletingProducto.id_producto);
+      setAlert({ variant: 'success', message: 'Producto dado de baja exitosamente' });
       setShowDeleteModal(false);
-      setDeletingMozo(null);
-      loadMozos();
+      setDeletingProducto(null);
+      loadProductos();
       setTimeout(() => setAlert(null), 3000);
     } catch (error) {
       setAlert({ variant: 'danger', message: error.message });
@@ -162,27 +161,27 @@ const Mozos = () => {
   };
 
   const handleLimpiarFiltros = () => {
-    setFiltros({ activos: '', sector_id: '' });
+    setFiltros({ activos: '', seccion_id: '' });
     setBusqueda('');
     setPagination(prev => ({ ...prev, page: 1 }));
   };
 
   const handlePageChange = (page) => {
     setPagination(prev => ({ ...prev, page }));
-    loadMozos(page);
+    loadProductos(page);
   };
 
-  if (loading && mozos.length === 0) {
+  if (loading && productos.length === 0) {
     return <Cargador />;
   }
 
   return (
     <Container fluid className="py-4">
       <PageHeader 
-        title="Gestión de Mozos" 
+        title="Gestión de Productos" 
         backPath="/gestion"
         onCreate={handleCreate}
-        createLabel="+ Nuevo Mozo"
+        createLabel="+ Nuevo Producto"
       />
 
       {alert && (
@@ -191,20 +190,20 @@ const Mozos = () => {
         </Alert>
       )}
 
-      <FiltrosMozos
+      <FiltrosProductos
         filtros={filtros}
         onFiltroChange={handleFiltroChange}
         busqueda={busqueda}
         onBusquedaChange={setBusqueda}
         onLimpiar={handleLimpiarFiltros}
-        sectores={sectores}
-        totalMozos={pagination.total}
-        mozosFiltrados={mozosFiltrados.length}
+        secciones={secciones}
+        totalProductos={pagination.total}
+        productosFiltrados={productosFiltrados.length}
       />
 
-      <TablaMozos
-        mozos={mozosFiltrados}
-        sectores={sectores}
+      <TablaProductos
+        productos={productosFiltrados}
+        secciones={secciones}
         onEdit={handleEdit}
         onDelete={handleDelete}
       />
@@ -217,22 +216,22 @@ const Mozos = () => {
         onPageChange={handlePageChange}
       />
 
-      <ModalMozo
+      <ModalProducto
         show={showModal}
         onHide={() => setShowModal(false)}
-        editingMozo={editingMozo}
+        editingProducto={editingProducto}
         onSubmit={handleSubmit}
-        sectores={sectores}
+        secciones={secciones}
       />
 
-      <ModalBajaMozo
+      <ModalBajaProducto
         show={showDeleteModal}
         onHide={() => setShowDeleteModal(false)}
-        mozo={deletingMozo}
+        producto={deletingProducto}
         onConfirm={handleConfirmDelete}
       />
     </Container>
   );
 };
 
-export default Mozos;
+export default Productos;

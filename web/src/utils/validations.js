@@ -1,23 +1,18 @@
 import * as Yup from 'yup';
 
-export const mozoValidationSchema = Yup.object({
-  dni: Yup.string()
-    .required('El DNI es requerido')
-    .matches(/^\d+$/, 'El DNI debe contener solo números'),
-  nombre: Yup.string()
-    .required('El nombre es requerido')
-    .min(2, 'El nombre debe tener al menos 2 caracteres'),
-  apellido: Yup.string()
-    .required('El apellido es requerido')
-    .min(2, 'El apellido debe tener al menos 2 caracteres'),
-  domicilio: Yup.string()
-    .required('El domicilio es requerido')
-    .min(5, 'El domicilio debe tener al menos 5 caracteres'),
+
+export const mozoValidationSchema = Yup.object().shape({
+  documento: Yup.string()
+    .required('El DNI es requerido'),
+  nombre_apellido: Yup.string()
+    .required('El nombre es requerido'),
+  direccion: Yup.string()
+    .required('El domicilio es requerido'),
   telefono: Yup.string()
     .required('El teléfono es requerido')
-    .matches(/^\d+$/, 'El teléfono debe contener solo números'),
-  sector: Yup.string()
-    .required('El sector es requerido')
+    .matches(/^\d{7,15}$/, 'Debe ser un número válido'),
+  id_sector: Yup.string()
+    .required('El sector es requerido'),
 });
 
 export const mesaValidationSchema = Yup.object({
@@ -70,4 +65,38 @@ export const clienteValidationSchema = Yup.object({
     .email('Formato de email inválido')
     .required('El email es obligatorio')
     .max(100, 'Máximo 100 caracteres'), // Límite de tu modelo
+});
+export const productoValidationSchema = Yup.object({
+  nombre: Yup.string()
+    .required('El nombre es obligatorio')
+    .max(255, 'Máximo 255 caracteres'),
+  codigo: Yup.string()
+    .required('El código es obligatorio')
+    .max(50, 'Máximo 50 caracteres'),
+  precio: Yup.number()
+    .typeError('El precio debe ser un número')
+    .positive('Debe ser mayor a 0')
+    .required('El precio es obligatorio'),
+  id_seccion: Yup.number()
+    .typeError('Debe seleccionar una sección')
+    .required('Debe seleccionar una sección'),
+  descripcion: Yup.string()
+    .max(500, 'Máximo 500 caracteres')
+    .nullable(),
+});
+
+export const seccionValidationSchema = Yup.object({
+  nombre: Yup.string()
+    .required('El nombre de la sección es obligatorio')
+    .max(255, 'Máximo 255 caracteres'),
+  baja: Yup.boolean().nullable(),
+});
+
+export const medioPagoValidationSchema = Yup.object({
+  nombre: Yup.string()
+    .required('El nombre del medio de pago es obligatorio') 
+    .max(100, 'Máximo 100 caracteres'),
+  descripcion: Yup.string()
+    .max(255, 'Máximo 255 caracteres')
+    .nullable(),
 });

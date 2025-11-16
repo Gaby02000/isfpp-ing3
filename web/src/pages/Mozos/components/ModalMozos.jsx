@@ -2,90 +2,97 @@ import React from 'react';
 import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
 import CampoFormulario from '../../../components/common/CampoFormulario';
 import { Formik } from 'formik';
-import { mesaValidationSchema } from '../../../utils/validations';
+import { mozoValidationSchema } from '../../../utils/validations';
 
-const ModalMesa = ({ 
-  show, 
-  onHide, 
-  editingMesa, 
-  onSubmit, 
-  sectores,
-  tiposMesas
+const ModalMozo = ({
+  show,
+  onHide,
+  editingMozo,
+  onSubmit,
+  sectores
 }) => {
   return (
     <Modal show={show} onHide={onHide} size="lg">
       <Formik
         initialValues={{
-          numero: editingMesa?.numero || '',
-          tipo: editingMesa?.tipo || '',
-          cant_comensales: editingMesa?.cant_comensales || '',
-          id_sector: editingMesa?.id_sector || ''
+          documento: editingMozo?.documento || '',
+          nombre_apellido: editingMozo?.nombre_apellido || '',
+          direccion: editingMozo?.direccion || '',
+          telefono: editingMozo?.telefono || '',
+          id_sector: editingMozo?.id_sector || ''
         }}
-        validationSchema={mesaValidationSchema}
-        onSubmit={onSubmit}
+        validationSchema={mozoValidationSchema}
+        onSubmit={(values, actions) => {
+          console.log("Formik onSubmit ejecutado", values); // 👈 Verificación
+          onSubmit(values, actions);
+        }}
       >
         {({ handleSubmit, handleChange, handleBlur, values, touched, errors, isSubmitting }) => (
           <Form onSubmit={handleSubmit}>
+            {console.log("Errores actuales:", errors)}
             <Modal.Header closeButton>
               <Modal.Title>
-                {editingMesa ? 'Modificar Mesa' : 'Nueva Mesa'}
+                {editingMozo ? 'Modificar Mozo' : 'Nuevo Mozo'}
               </Modal.Title>
             </Modal.Header>
             <Modal.Body>
               <Row>
                 <Col md={6}>
                   <CampoFormulario
-                    label="Número de Mesa"
-                    name="numero"
-                    type="number"
-                    value={values.numero}
+                    label="DNI"
+                    name="documento"
+                    type="text"
+                    value={values.documento}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    touched={touched.numero}
-                    error={errors.numero}
-                    placeholder="Ej: 1, 2, 3..."
-                    disabled={!!editingMesa}
+                    touched={touched.documento}
+                    error={errors.documento}
+                    placeholder="Ej: 12345678"
                   />
                 </Col>
                 <Col md={6}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Tipo</Form.Label>
-                    <Form.Select
-                      name="tipo"
-                      value={values.tipo}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      isInvalid={touched.tipo && errors.tipo}
-                    >
-                      <option value="">Seleccione un tipo</option>
-                      {tiposMesas.map((tipo) => (
-                        <option key={tipo} value={tipo}>
-                          {tipo}
-                        </option>
-                      ))}
-                    </Form.Select>
-                    {touched.tipo && errors.tipo && (
-                      <Form.Control.Feedback type="invalid">
-                        {errors.tipo}
-                      </Form.Control.Feedback>
-                    )}
-                  </Form.Group>
+                  <CampoFormulario
+                    label="Nombre y Apellido"
+                    name="nombre_apellido"
+                    type="text"
+                    value={values.nombre_apellido}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    touched={touched.nombre_apellido}
+                    error={errors.nombre_apellido}
+                    placeholder="Ej: Juan Pérez"
+                  />
                 </Col>
               </Row>
               <Row>
                 <Col md={6}>
                   <CampoFormulario
-                    label="Cantidad de Comensales"
-                    name="cant_comensales"
-                    type="number"
-                    value={values.cant_comensales}
+                    label="Domicilio"
+                    name="direccion"
+                    type="text"
+                    value={values.direccion}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    touched={touched.cant_comensales}
-                    error={errors.cant_comensales}
-                    placeholder="Ej: 4, 6, 8..."
+                    touched={touched.direccion}
+                    error={errors.direccion}
+                    placeholder="Ej: Calle Falsa 123"
                   />
                 </Col>
+                <Col md={6}>
+                  <CampoFormulario
+                    label="Teléfono"
+                    name="telefono"
+                    type="text"
+                    value={values.telefono}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    touched={touched.telefono}
+                    error={errors.telefono}
+                    placeholder="Ej: 2804123456"
+                  />
+                </Col>
+              </Row>
+              <Row>
                 <Col md={6}>
                   <Form.Group className="mb-3">
                     <Form.Label>Sector</Form.Label>
@@ -119,7 +126,7 @@ const ModalMesa = ({
                 Cancelar
               </Button>
               <Button variant="primary" type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Guardando...' : editingMesa ? 'Modificar' : 'Crear'}
+                {isSubmitting ? 'Guardando...' : editingMozo ? 'Modificar' : 'Crear'}
               </Button>
             </Modal.Footer>
           </Form>
@@ -129,5 +136,4 @@ const ModalMesa = ({
   );
 };
 
-export default ModalMesa;
-
+export default ModalMozo;

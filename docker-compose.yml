@@ -24,8 +24,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      # Apunta al backend por nombre de servicio y puerto interno (99)
-      VITE_BACKEND_URL: "http://backend:99"
+      # Apunta al backend por localhost:8099 (accesible desde el navegador)
+      VITE_BACKEND_URL: "http://localhost:8099"
     depends_on:
       - backend
     volumes:

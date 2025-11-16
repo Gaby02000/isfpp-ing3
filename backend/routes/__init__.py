@@ -3,6 +3,7 @@ from .seccion_routes import seccion_bp
 from .producto_routes import producto_bp
 from .sector_routes import sector_bp
 from .mesa_routes import mesa_bp
+from .medio_pagos_routes import medio_pagos_bp
 from .mozo_routes import mozo_bp
 from .cliente_routes import cliente_bp
 
@@ -13,3 +14,5 @@ api_bp.register_blueprint(sector_bp, url_prefix='/sectores')
 api_bp.register_blueprint(mesa_bp, url_prefix='/mesas')
 api_bp.register_blueprint(mozo_bp, url_prefix='/mozos')
 api_bp.register_blueprint(cliente_bp, url_prefix='/clientes')
+api_bp.register_blueprint(medio_pagos_bp, url_prefix='/medio-pagos')
+api_bp.register_blueprint(mozo_bp, url_prefix='/mozos')

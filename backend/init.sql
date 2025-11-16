@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS mesa (
     id_sector INT NOT NULL,
     baja BOOLEAN DEFAULT FALSE,
     CONSTRAINT fk_mesa_sector FOREIGN KEY (id_sector)
-        REFERENCES sector(id)
+        REFERENCES sector(id_sector)
         ON UPDATE CASCADE
         ON DELETE RESTRICT
 );
@@ -76,7 +76,13 @@ CREATE TABLE IF NOT EXISTS bebida (
         ON DELETE CASCADE
 );
 
-
+-- Nueva tabla MEDIO PAGO
+CREATE TABLE IF NOT EXISTS medio_pago (
+    id_medio_pago SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL UNIQUE,
+    descripcion VARCHAR(255),
+    baja BOOLEAN DEFAULT false
+);
 
 
 -- Nueva tabla MOZO
@@ -89,7 +95,7 @@ CREATE TABLE IF NOT EXISTS mozo (
     id_sector INTEGER,
     baja BOOLEAN DEFAULT false,
     CONSTRAINT fk_mozo_sector FOREIGN KEY (id_sector)
-        REFERENCES sector(id)
+        REFERENCES sector(id_sector)
         ON UPDATE CASCADE
         ON DELETE SET NULL
 );
