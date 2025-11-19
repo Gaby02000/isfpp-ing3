@@ -8,15 +8,64 @@ mozo_bp = Blueprint('mozo', __name__)
 @mozo_bp.route('/', methods=['GET'])
 def listar_mozos():
     session = SessionLocal()
-    activos = request.args.get('activos', '').lower() == 'true'
-    if activos:
-        mozos = session.query(Mozo).filter_by(baja=False).all()
-    else:
-        mozos = session.query(Mozo).all()
-
-    data = [m.json() for m in mozos]
-    session.close()
-    return jsonify({'status': 'success', 'data': data}), 200
+    try:
+        activos = request.args.get('activos', type=str)
+        sector_id = request.args.get('sector_id', type=int)
+        
+        # Parámetros de paginación
+        page = request.args.get('page', default=1, type=int)
+        per_page = request.args.get('per_page', default=10, type=int)
+        
+        # Validar parámetros de paginación
+        if page < 1:
+            page = 1
+        if per_page < 1 or per_page > 100:
+            per_page = 10
+        
+        query = session.query(Mozo)
+        
+        # Filtros
+        if activos == 'true':
+            query = query.filter_by(baja=False)
+        elif activos == 'false':
+            query = query.filter_by(baja=True)
+        else:
+            # Por defecto solo mostrar activos
+            query = query.filter_by(baja=False)
+        if sector_id:
+            query = query.filter_by(id_sector=sector_id)
+        
+        # Contar total antes de paginar
+        total = query.count()
+        
+        # Aplicar paginación
+        offset = (page - 1) * per_page
+        mozos = query.offset(offset).limit(per_page).all()
+        
+        data = [m.json() for m in mozos]
+        
+        # Calcular total de páginas
+        total_pages = (total + per_page - 1) // per_page if total > 0 else 1
+        
+        return jsonify({
+            'status': 'success',
+            'data': data,
+            'pagination': {
+                'page': page,
+                'per_page': per_page,
+                'total': total,
+                'total_pages': total_pages,
+                'has_next': page < total_pages,
+                'has_prev': page > 1
+            }
+        }), 200
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Error al listar mozos: {str(e)}'
+        }), 500
+    finally:
+        session.close()
 
 
 @mozo_bp.route('/<int:id>', methods=['GET'])

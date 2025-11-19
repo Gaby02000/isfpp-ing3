@@ -8,7 +8,7 @@ seccion_bp = Blueprint('seccion', __name__)
 def listar_secciones():
     session = SessionLocal()
     try:
-        activos = request.args.get('activos', '').lower() == 'true'
+        activos = request.args.get('activos', type=str)
         
         # Parámetros de paginación
         page = request.args.get('page', default=1, type=int)

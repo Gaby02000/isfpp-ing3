@@ -8,7 +8,7 @@ producto_bp = Blueprint('producto', __name__)
 def listar_productos():
     session = SessionLocal()
     try:
-        activos = request.args.get('activos', '').lower() == 'true'
+        activos = request.args.get('activos', type=str)
         seccion_id = request.args.get('seccion_id', type=int)
         ordenar_por = request.args.get('ordenar_por', default='nombre', type=str)
         
