@@ -13,7 +13,7 @@ sys.path.insert(0, backend_dir)
 from db import SessionLocal, engine, Base
 from models import (
     Seccion, Producto, Plato, Postre, Bebida,
-    Sector, Mesa, MedioPago
+    Sector, Mesa, MedioPago, Cliente, Mozo
 )
 
 # Importar seeders
@@ -22,6 +22,8 @@ from seed.seccion.seed_seccion import seed_secciones
 from seed.producto.seed_producto import seed_productos
 from seed.mesa.seed_mesa import seed_mesas
 from seed.mediopago.seed_medio_pago import seed_medio_pago
+from seed.cliente.seed_cliente import seed_clientes
+from seed.mozo.seed_mozo import seed_mozos
 
 
 def limpiar_datos(session):
@@ -29,6 +31,8 @@ def limpiar_datos(session):
     print("⚠️  Limpiando datos existentes...")
     try:
         session.query(Mesa).delete()
+        session.query(Mozo).delete()
+        session.query(Cliente).delete()
         session.query(Sector).delete()
         session.query(Plato).delete()
         session.query(Postre).delete()
@@ -63,7 +67,9 @@ def main():
         secciones = seed_secciones(session)
         productos = seed_productos(session, secciones)
         mesas = seed_mesas(session, sectores)
+        mozos = seed_mozos(session, sectores)
         medios_pago = seed_medio_pago(session)
+        clientes = seed_clientes(session)
 
         print("=" * 50)
         print("✅ ¡Carga de datos completada exitosamente!")
@@ -72,7 +78,9 @@ def main():
         print(f"   - Secciones: {len(secciones)}")
         print(f"   - Productos: {len(productos)}")
         print(f"   - Mesas: {len(mesas)}")
+        print(f"   - Mozos: {len(mozos)}")
         print(f"   - Medios de Pago: {len(medios_pago)}")
+        print(f"   - Clientes: {len(clientes)}")
         
     except Exception as e:
         session.rollback()

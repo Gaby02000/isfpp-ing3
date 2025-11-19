@@ -37,12 +37,10 @@ const Gestion = () => {
     },
     {
       title: 'Clientes',
-      descripcion: 'Administra los clientes del sistema: Alta, Baja y Modificación',
+      description: 'Administra los clientes del sistema: Alta, Baja y Modificación',
       icon: '👥',
-      path: 'gestion/clientes',
+      path: '/gestion/clientes',
       variant: 'success'
-
-
     },
     {
       title: 'Secciones',

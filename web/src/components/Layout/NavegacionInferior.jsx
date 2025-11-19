@@ -51,7 +51,7 @@ const NavegacionInferior = () => {
     {
       path: '/gestion/clientes',
       icon: '👥',
-      label: 'clientes'
+      label: 'Clientes'
     }
   ];
 
