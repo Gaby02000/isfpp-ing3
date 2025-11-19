@@ -32,8 +32,7 @@ const Gestion = () => {
       description: 'Administra productos, platos, postres y bebidas del menú',
       icon: '🍽️',
       path: '/gestion/productos',
-      variant: 'success',
-      disabled: true
+      variant: 'success'
     },
     {
       title: 'Clientes',
