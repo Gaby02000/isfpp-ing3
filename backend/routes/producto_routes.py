@@ -7,13 +7,71 @@ producto_bp = Blueprint('producto', __name__)
 @producto_bp.route('/', methods=['GET'])
 def listar_productos():
     session = SessionLocal()
-    productos = session.query(Producto).filter_by(baja=False).all()
-    data = [p.json() for p in productos]
-    session.close()
-    return jsonify({
-        'status': 'success',
-        'data': data
-    }), 200
+    try:
+        activos = request.args.get('activos', '').lower() == 'true'
+        seccion_id = request.args.get('seccion_id', type=int)
+        ordenar_por = request.args.get('ordenar_por', default='nombre', type=str)
+        
+        # Parámetros de paginación
+        page = request.args.get('page', default=1, type=int)
+        per_page = request.args.get('per_page', default=10, type=int)
+        
+        # Validar parámetros de paginación
+        if page < 1:
+            page = 1
+        if per_page < 1 or per_page > 100:
+            per_page = 10
+        
+        query = session.query(Producto)
+        
+        # Filtros
+        if activos == 'true':
+            query = query.filter_by(baja=False)
+        elif activos == 'false':
+            query = query.filter_by(baja=True)
+        else:
+            # Por defecto solo mostrar activos
+            query = query.filter_by(baja=False)
+        if seccion_id:
+            query = query.filter_by(id_seccion=seccion_id)
+        
+        # Ordenamiento
+        if ordenar_por == 'nombre':
+            query = query.order_by(Producto.nombre)
+        elif ordenar_por == 'precio':
+            query = query.order_by(Producto.precio)
+        
+        # Contar total antes de paginar
+        total = query.count()
+        
+        # Aplicar paginación
+        offset = (page - 1) * per_page
+        productos = query.offset(offset).limit(per_page).all()
+        
+        data = [p.json() for p in productos]
+        
+        # Calcular total de páginas
+        total_pages = (total + per_page - 1) // per_page if total > 0 else 1
+        
+        return jsonify({
+            'status': 'success',
+            'data': data,
+            'pagination': {
+                'page': page,
+                'per_page': per_page,
+                'total': total,
+                'total_pages': total_pages,
+                'has_next': page < total_pages,
+                'has_prev': page > 1
+            }
+        }), 200
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Error al listar productos: {str(e)}'
+        }), 500
+    finally:
+        session.close()
 
 
 @producto_bp.route('/', methods=['POST'])
