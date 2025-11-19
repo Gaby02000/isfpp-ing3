@@ -37,7 +37,7 @@ const BarraNavegacion = () => {
         <Navbar.Toggle aria-controls="navbarNav" />
         <Navbar.Collapse id="navbarNav">
           <Nav className="me-auto">
-            <Nav.Link as={Link} to="/">Inicio</Nav.Link>
+            {/* <Nav.Link as={Link} to="/">Inicio</Nav.Link>
             <Nav.Link as={Link} to="/gestion">Gestión</Nav.Link>
             <NavDropdown title="Mesas" id="nav-dropdown-mesas">
               <NavDropdown.Item as={Link} to="/gestion/mesas">Gestión de Mesas</NavDropdown.Item>
@@ -60,7 +60,7 @@ const BarraNavegacion = () => {
             </NavDropdown>
             <NavDropdown title="Secciones" id="nav-dropdown-secciones">
               <NavDropdown.Item as={Link} to="/gestion/secciones">Gestión de Porductos</NavDropdown.Item>
-            </NavDropdown>
+            </NavDropdown> */}
           </Nav>
         </Navbar.Collapse>
         <Navbar.Brand 
