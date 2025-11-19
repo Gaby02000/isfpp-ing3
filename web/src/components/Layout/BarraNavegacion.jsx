@@ -55,6 +55,12 @@ const BarraNavegacion = () => {
               <NavDropdown.Item as={Link} to="/gestion/mozos/modificar">Modificar Mozo</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/gestion/mozos/baja">Baja de Mozo</NavDropdown.Item>
             </NavDropdown>
+            <NavDropdown title="Productos" id="nav-dropdown-productos">
+              <NavDropdown.Item as={Link} to="/gestion/productos">Gestión de Porductos</NavDropdown.Item>
+            </NavDropdown>
+            <NavDropdown title="Secciones" id="nav-dropdown-secciones">
+              <NavDropdown.Item as={Link} to="/gestion/secciones">Gestión de Porductos</NavDropdown.Item>
+            </NavDropdown>
           </Nav>
         </Navbar.Collapse>
         <Navbar.Brand 
