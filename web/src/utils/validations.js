@@ -32,6 +32,18 @@ export const mesaValidationSchema = Yup.object({
     .positive('Debe seleccionar un sector')
 });
 
+export const comandaValidationSchema = Yup.object({
+  id_mesa: Yup.number()
+    .required('La mesa es requerida')
+    .positive('Debe seleccionar una mesa'),
+  id_mozo: Yup.number()
+    .required('El mozo es requerido')
+    .positive('Debe seleccionar un mozo'),
+    fecha: Yup.date()
+    .required('La fecha es requerida'),
+    
+}); 
+
 export const sectorValidationSchema = Yup.object({
   numero: Yup.number()
     .required('El número de sector es requerido')

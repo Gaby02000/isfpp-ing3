@@ -10,7 +10,8 @@ const pageTitles = {
   '/gestion/productos': 'Gestión de Productos - UNPSJB',
   '/gestion/secciones': 'Gestión de Secciones - UNPSJB',
   '/gestion/medio-pagos': 'Medios de Pago - UNPSJB',
-  '/gestion/clientes': 'Gestión de Clientes - UNPSJB'
+  '/gestion/clientes': 'Gestión de Clientes - UNPSJB',
+  '/gestion/comandas': 'Gestión de Comandas - UNPSJB'
 };
 
 export const useDocumentTitle = () => {

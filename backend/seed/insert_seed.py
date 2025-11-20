@@ -24,6 +24,7 @@ from seed.mesa.seed_mesa import seed_mesas
 from seed.mediopago.seed_medio_pago import seed_medio_pago
 from seed.cliente.seed_cliente import seed_clientes
 from seed.mozo.seed_mozo import seed_mozos
+from seed.comanda.seed_comanda import seed_comandas
 
 
 def limpiar_datos(session):
@@ -70,6 +71,7 @@ def main():
         mozos = seed_mozos(session, sectores)
         medios_pago = seed_medio_pago(session)
         clientes = seed_clientes(session)
+        comandas = seed_comandas(session)
 
         print("=" * 50)
         print("✅ ¡Carga de datos completada exitosamente!")
@@ -81,6 +83,7 @@ def main():
         print(f"   - Mozos: {len(mozos)}")
         print(f"   - Medios de Pago: {len(medios_pago)}")
         print(f"   - Clientes: {len(clientes)}")
+        print(f"   - Comandas: {len(comandas)}")
         
     except Exception as e:
         session.rollback()

@@ -54,6 +54,13 @@ const Gestion = () => {
       icon: '💳',
       path: '/gestion/medio-pagos',
       variant: 'light'
+    },
+    {
+      title: 'Comandas',
+      description: 'Gestiona las comandas del restaurante: Alta, Baja y Modificación',
+      icon: '🧾' ,
+      path: '/gestion/comandas',
+      variant: 'warning'
     }
   ];
 

@@ -100,6 +100,22 @@ CREATE TABLE IF NOT EXISTS mozo (
         ON DELETE SET NULL
 );
 
+CREATE TABLE IF NOT EXISTS comanda (
+    id_comanda SERIAL PRIMARY KEY,
+    fecha VARCHAR(50) NOT NULL,
+    id_mozo INT NOT NULL,
+    id_mesa INT NOT NULL,
+    baja BOOLEAN DEFAULT FALSE,
+    CONSTRAINT fk_comanda_mozo FOREIGN KEY (id_mozo)
+        REFERENCES mozo(id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+    CONSTRAINT fk_comanda_mesa FOREIGN KEY (id_mesa)
+        REFERENCES mesa(id_mesa)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+);
+
 -- Inserciones
 INSERT INTO seccion (nombre, baja) VALUES
 ('xd', FALSE),
