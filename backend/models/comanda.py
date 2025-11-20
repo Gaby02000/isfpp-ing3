@@ -1,5 +1,5 @@
 #Crear comandas para los pedidos de los clientes
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from db import Base
 
@@ -8,7 +8,7 @@ class Comanda(Base):
     
     id_comanda = Column(Integer, primary_key=True)
     fecha = Column(String(50), nullable=False)
-    id_mozo = Column(Integer, ForeignKey('mozo.id_mozo'), nullable=False)
+    id_mozo = Column(Integer, ForeignKey('mozo.id'), nullable=False)
     id_mesa = Column(Integer, ForeignKey('mesa.id_mesa'), nullable=False)
     baja = Column(Boolean, default=False)
     

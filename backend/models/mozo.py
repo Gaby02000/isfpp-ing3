@@ -16,6 +16,8 @@ class Mozo(Base):
 
     # Relación a Sector
     sector = relationship('Sector', back_populates='mozos')
+    comandas = relationship("Comanda", back_populates="mozo")
+
 
     def __init__(self, documento, nombre_apellido, id_sector=None, direccion=None, telefono=None, baja=False):
         self.documento = documento

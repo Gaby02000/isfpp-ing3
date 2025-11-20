@@ -1,10 +1,10 @@
 from flask import Blueprint, jsonify, request
 from db import SessionLocal
-from models import Comanda  
+from models import Comanda, Mesa, Mozo
 
 comanda_bp = Blueprint('comanda', __name__)
 
-@mesa_bp.route('/', methods=['GET'])
+@comanda_bp.route('/', methods=['GET'])
 def listar_comandas():
     session = SessionLocal()
     try:

@@ -10,6 +10,7 @@ import Clientes from './pages/Clientes/Clientes';
 import Productos from './pages/Productos/Productos';
 import Secciones from './pages/Secciones/Secciones';
 import MedioPagos from './pages/MedioPagos/MedioPagos';
+import Comandas from './pages/Comanda/Comandas';
 import { useDocumentTitle } from './hooks/useDocumentTitle';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -28,6 +29,7 @@ function AppContent() {
         <Route path="/gestion/secciones" element={<Secciones/>} />
         <Route path="/gestion/medio-pagos" element={<MedioPagos />} />
         <Route path="/gestion/clientes" element={<Clientes />} />
+        <Route path="/comanda/comandas" element={<Comandas />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Plantilla>
