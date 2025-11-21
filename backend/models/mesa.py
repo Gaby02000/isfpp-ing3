@@ -14,6 +14,7 @@ class Mesa(Base):
     
     # Relaciones
     sector = relationship("Sector", back_populates="mesas")
+    reservas = relationship("Reserva", back_populates="mesa")
     
     def __init__(self, numero, tipo, cant_comensales, id_sector, baja=False):
         self.numero = numero

@@ -8,7 +8,17 @@ importers:
 
   .: {}
 
-  backend: {}
+  backend:
+    devDependencies:
+      eslint:
+        specifier: ^8.45.0
+        version: 8.57.1
+      eslint-plugin-react:
+        specifier: ^7.32.2
+        version: 7.37.5(eslint@8.57.1)
+      globals:
+        specifier: ^16.5.0
+        version: 16.5.0
 
   web:
     dependencies:
@@ -1566,6 +1576,11 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       type-fest: 0.20.2
+    dev: true
+
+  /globals@16.5.0:
+    resolution: {integrity: sha512-c/c15i26VrJ4IRt5Z89DnIzCGDn9EcebibhAOjw5ibqEHsE1wLUgkPn9RDmNcUKyU87GeaL633nyJ+pplFR2ZQ==}
+    engines: {node: '>=18'}
     dev: true
 
   /globalthis@1.0.4:

@@ -52,6 +52,11 @@ const NavegacionInferior = () => {
       path: '/gestion/clientes',
       icon: '👥',
       label: 'Clientes'
+    },
+    {
+      path: '/gestion/reservas',
+      icon: '📅',
+      label: 'Reservas'
     }
   ];
 
@@ -63,12 +68,12 @@ const NavegacionInferior = () => {
   };
 
   return (
-    <Navbar 
-      fixed="bottom" 
-      bg="light" 
-      variant="light" 
+    <Navbar
+      fixed="bottom"
+      bg="light"
+      variant="light"
       className="border-top shadow-sm"
-      style={{ 
+      style={{
         height: '60px',
         paddingTop: '0',
         paddingBottom: '0',
@@ -77,9 +82,9 @@ const NavegacionInferior = () => {
         WebkitOverflowScrolling: 'touch'
       }}
     >
-      <Nav 
-        className="d-flex align-items-center" 
-        style={{ 
+      <Nav
+        className="d-flex align-items-center"
+        style={{
           height: '100%',
           minWidth: 'max-content',
           paddingLeft: '10px',
@@ -108,7 +113,14 @@ const NavegacionInferior = () => {
               }}
             >
               <span style={{ fontSize: '1.5rem', lineHeight: '1' }}>{item.icon}</span>
-              <small style={{ fontSize: '0.65rem', marginTop: '2px', fontWeight: active ? '600' : '400', textAlign: 'center' }}>
+              <small
+                style={{
+                  fontSize: '0.65rem',
+                  marginTop: '2px',
+                  fontWeight: active ? '600' : '400',
+                  textAlign: 'center'
+                }}
+              >
                 {item.label}
               </small>
             </Nav.Link>

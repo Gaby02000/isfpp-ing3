@@ -42,6 +42,13 @@ const Gestion = () => {
       variant: 'success'
     },
     {
+      title: 'Reservas',
+      description: 'Gestiona las reservas de mesas: creación, modificación y cancelación',
+      icon: '📅',
+      path: '/gestion/reservas',
+      variant: 'warning'
+    },
+    {
       title: 'Secciones',
       description: 'Gestiona las secciones del menú y su organización',
       icon: '📋',

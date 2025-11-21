@@ -100,3 +100,29 @@ export const medioPagoValidationSchema = Yup.object({
     .max(255, 'Máximo 255 caracteres')
     .nullable(),
 });
+
+export const reservaValidationSchema = Yup.object({
+  numero: Yup.number()
+    .required('El número de reserva es obligatorio')
+    .positive('Debe ser un número positivo')
+    .integer('Debe ser un número entero'),
+
+  fecha_hora: Yup.date()
+    .required('La fecha y hora de la reserva son obligatorias')
+    .min(new Date(), 'La fecha debe ser futura'),
+
+  cant_personas: Yup.number()
+    .required('La cantidad de personas es obligatoria')
+    .positive('Debe ser mayor a 0')
+    .integer('Debe ser un número entero'),
+
+  id_cliente: Yup.number()
+    .required('Debe seleccionar un cliente')
+    .positive('Debe seleccionar un cliente válido'),
+
+  id_mesa: Yup.number()
+    .required('Debe seleccionar una mesa')
+    .positive('Debe seleccionar una mesa válida'),
+
+  cancelado: Yup.boolean().nullable()
+});

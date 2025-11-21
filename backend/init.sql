@@ -100,7 +100,38 @@ CREATE TABLE IF NOT EXISTS mozo (
         ON DELETE SET NULL
 );
 
+CREATE TABLE IF NOT EXISTS reserva (
+    id_reserva SERIAL PRIMARY KEY,
+    numero INT NOT NULL UNIQUE, -- número de reserva
+    fecha_hora TIMESTAMP NOT NULL, -- fecha y hora de la reserva
+    cant_personas INT NOT NULL CHECK (cant_personas > 0), -- cantidad de comensales
+    id_cliente INT NOT NULL, -- FK al cliente
+    id_mesa INT NOT NULL, -- FK a la mesa
+    cancelado BOOLEAN DEFAULT FALSE, -- inicializa en "No" (FALSE)
+    fecha_creacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- fecha de creación
+
+    -- Relaciones
+    CONSTRAINT fk_reserva_cliente FOREIGN KEY (id_cliente)
+        REFERENCES cliente(id_cliente)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_reserva_mesa FOREIGN KEY (id_mesa)
+        REFERENCES mesa(id_mesa)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+);
+
 -- Inserciones
+
+INSERT INTO cliente (documento, nombre, apellido, num_telefono, email, baja)
+VALUES
+('30111222', 'Juan', 'Pérez', '2974456789', 'juan.perez@example.com', FALSE),
+('30222333', 'María', 'González', '2974123456', 'maria.gonzalez@example.com', FALSE),
+('30333444', 'Carlos', 'Ramírez', '2974987654', 'carlos.ramirez@example.com', FALSE),
+('30444555', 'Ana', 'López', '2974765432', 'ana.lopez@example.com', FALSE),
+('30555666', 'Pedro', 'Martínez', '2974234567', 'pedro.martinez@example.com', FALSE);
+
 INSERT INTO seccion (nombre, baja) VALUES
 ('xd', FALSE),
 ('xd2', FALSE),
@@ -133,3 +164,38 @@ INSERT INTO mozo (documento, nombre_apellido, direccion, telefono, id_sector, ba
 -- Inserts de ejemplo para CLIENTE (idempotente)
 INSERT INTO cliente (documento, nombre, apellido, num_telefono, email, baja) VALUES
 ('17555444', 'Marcelo', 'Santander', '2804000456', 'santander@gmail.com', FALSE);
+
+-- Mesas del sector 1
+INSERT INTO mesa (numero, tipo, cant_comensales, id_sector, baja)
+VALUES (1, 'Interior', 4, 1, FALSE);
+
+INSERT INTO mesa (numero, tipo, cant_comensales, id_sector, baja)
+VALUES (2, 'Interior', 2, 1, FALSE);
+
+-- Mesas del sector 2
+INSERT INTO mesa (numero, tipo, cant_comensales, id_sector, baja)
+VALUES (3, 'Terraza', 6, 2, FALSE);
+
+INSERT INTO mesa (numero, tipo, cant_comensales, id_sector, baja)
+VALUES (4, 'Terraza', 4, 2, FALSE);
+
+-- Mesas del sector 3
+INSERT INTO mesa (numero, tipo, cant_comensales, id_sector, baja)
+VALUES (5, 'VIP', 8, 3, FALSE);
+
+INSERT INTO mesa (numero, tipo, cant_comensales, id_sector, baja)
+VALUES (6, 'VIP', 10, 3, FALSE);
+
+
+-- Reserva en mesa 1 para cliente 1
+INSERT INTO reserva (numero, fecha_hora, cant_personas, id_cliente, id_mesa, cancelado)
+VALUES (1001, '2025-11-25 20:30:00', 4, 1, 1, FALSE);
+
+-- Reserva en mesa 2 para cliente 2
+INSERT INTO reserva (numero, fecha_hora, cant_personas, id_cliente, id_mesa, cancelado)
+VALUES (1002, '2025-11-26 21:00:00', 2, 2, 2, FALSE);
+
+-- Reserva en mesa 3 para cliente 3
+INSERT INTO reserva (numero, fecha_hora, cant_personas, id_cliente, id_mesa, cancelado)
+VALUES (1003, '2025-11-27 19:00:00', 6, 3, 3, FALSE);
+
