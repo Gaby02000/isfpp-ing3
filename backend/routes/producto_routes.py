@@ -8,51 +8,67 @@ producto_bp = Blueprint('producto', __name__)
 def listar_productos():
     session = SessionLocal()
     try:
+        # Parámetros
+        nombre = request.args.get('nombre', type=str)
         activos = request.args.get('activos', type=str)
-        seccion_id = request.args.get('seccion_id', type=int)
+        seccion_id = request.args.get('id_seccion', type=int)  # <-- FIX: ahora coincide con el frontend
+        precio_min = request.args.get('precio_min', type=float)
+        precio_max = request.args.get('precio_max', type=float)
         ordenar_por = request.args.get('ordenar_por', default='nombre', type=str)
-        
-        # Parámetros de paginación
+
+        # Paginación
         page = request.args.get('page', default=1, type=int)
         per_page = request.args.get('per_page', default=10, type=int)
-        
-        # Validar parámetros de paginación
+
+        # Validaciones
         if page < 1:
             page = 1
         if per_page < 1 or per_page > 100:
             per_page = 10
-        
+
         query = session.query(Producto)
-        
-        # Filtros
+
+        # FILTRO: Activos / Inactivos
         if activos == 'true':
-            query = query.filter_by(baja=False)
+            query = query.filter(Producto.baja == False)
         elif activos == 'false':
-            query = query.filter_by(baja=True)
+            query = query.filter(Producto.baja == True)
         else:
-            # Por defecto solo mostrar activos
-            query = query.filter_by(baja=False)
+            query = query.filter(Producto.baja == False)
+
+        # FILTRO: Nombre (contiene)
+        if nombre:
+            query = query.filter(Producto.nombre.ilike(f"%{nombre}%"))
+
+        # FILTRO: Sección
         if seccion_id:
-            query = query.filter_by(id_seccion=seccion_id)
-        
+            query = query.filter(Producto.id_seccion == seccion_id)
+
+        # FILTRO: Precio mínimo
+        if precio_min is not None:
+            query = query.filter(Producto.precio >= precio_min)
+
+        # FILTRO: Precio máximo
+        if precio_max is not None:
+            query = query.filter(Producto.precio <= precio_max)
+
         # Ordenamiento
         if ordenar_por == 'nombre':
-            query = query.order_by(Producto.nombre)
+            query = query.order_by(Producto.nombre.asc())
         elif ordenar_por == 'precio':
-            query = query.order_by(Producto.precio)
-        
-        # Contar total antes de paginar
+            query = query.order_by(Producto.precio.asc())
+
+        # Total antes de paginar
         total = query.count()
-        
-        # Aplicar paginación
+
+        # Paginación
         offset = (page - 1) * per_page
         productos = query.offset(offset).limit(per_page).all()
-        
+
         data = [p.json() for p in productos]
-        
-        # Calcular total de páginas
+
         total_pages = (total + per_page - 1) // per_page if total > 0 else 1
-        
+
         return jsonify({
             'status': 'success',
             'data': data,
@@ -65,13 +81,16 @@ def listar_productos():
                 'has_prev': page > 1
             }
         }), 200
+
     except Exception as e:
         return jsonify({
             'status': 'error',
             'message': f'Error al listar productos: {str(e)}'
         }), 500
+
     finally:
         session.close()
+
 
 
 @producto_bp.route('/', methods=['POST'])

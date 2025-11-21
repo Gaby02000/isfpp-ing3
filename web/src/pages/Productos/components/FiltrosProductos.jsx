@@ -75,8 +75,9 @@ const FiltrosProductos = ({
               type="number"
               min="0"
               step="0.01"
-              value={filtros.precioMin}
-              onChange={(e) => onFiltroChange('precioMin', e.target.value)}
+              value={filtros.precio_min}
+              onChange={(e) => onFiltroChange('precio_min', e.target.value)}
+
               placeholder="Ej: 100.00"
             />
           </Form.Group>
@@ -90,8 +91,9 @@ const FiltrosProductos = ({
               type="number"
               min="0"
               step="0.01"
-              value={filtros.precioMax}
-              onChange={(e) => onFiltroChange('precioMax', e.target.value)}
+              value={filtros.precio_max}
+              onChange={(e) => onFiltroChange('precio_max', e.target.value)}
+
               placeholder="Ej: 500.00"
             />
           </Form.Group>

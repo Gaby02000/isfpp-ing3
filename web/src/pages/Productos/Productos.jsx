@@ -33,8 +33,11 @@ const Productos = () => {
 
   const [filtros, setFiltros] = useState({
     activos: '',
-    seccion_id: ''
+    id_seccion: '',
+    precio_min: '',
+    precio_max: ''
   });
+
 
   const [busqueda, setBusqueda] = useState('');
 
@@ -45,16 +48,19 @@ const Productos = () => {
 
   useEffect(() => {
     loadProductos();
-  }, [pagination.page, filtros.activos, filtros.seccion_id]);
+  }, [pagination.page, filtros.activos, filtros.id_seccion, filtros.precio_min, filtros.precio_max]);
 
   const loadProductos = async (page = pagination.page) => {
     try {
-      const filters = {
+     const filters = {
         page,
         per_page: pagination.per_page,
         activos: filtros.activos || undefined,
-        seccion_id: filtros.seccion_id || undefined
+        id_seccion: filtros.id_seccion || undefined,
+        precio_min: filtros.precio_min || undefined,
+        precio_max: filtros.precio_max || undefined
       };
+
 
       const response = await getProductos(filters);
       let productosData = response.data || [];
@@ -161,10 +167,16 @@ const Productos = () => {
   };
 
   const handleLimpiarFiltros = () => {
-    setFiltros({ activos: '', seccion_id: '' });
+    setFiltros({
+      activos: '',
+      id_seccion: '',
+      precio_min: '',
+      precio_max: ''
+    });
     setBusqueda('');
     setPagination(prev => ({ ...prev, page: 1 }));
   };
+
 
   const handlePageChange = (page) => {
     setPagination(prev => ({ ...prev, page }));

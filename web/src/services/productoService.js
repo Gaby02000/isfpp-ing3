@@ -11,11 +11,25 @@ export const useProductoService = () => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
-      if (filters.activos) params.append('activos', filters.activos);
-      if (filters.ordenar_por) params.append('ordenar_por', filters.ordenar_por);
-      if (filters.page) params.append('page', filters.page);
-      if (filters.per_page) params.append('per_page', filters.per_page);
-      if (filters.seccion_id) params.append('seccion_id', filters.seccion_id);
+
+      if (filters.activos !== undefined && filters.activos !== '')
+        params.append('activos', filters.activos);
+
+      if (filters.id_seccion)
+        params.append('id_seccion', filters.id_seccion);
+
+      if (filters.precio_min)
+        params.append('precio_min', filters.precio_min);
+
+      if (filters.precio_max)
+        params.append('precio_max', filters.precio_max);
+
+      if (filters.page)
+        params.append('page', filters.page);
+
+      if (filters.per_page)
+        params.append('per_page', filters.per_page);
+
 
       const response = await axios.get(`${BACKEND_URL}/api/productos/?${params.toString()}`);
       return response.data;
