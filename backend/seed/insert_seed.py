@@ -13,7 +13,7 @@ sys.path.insert(0, backend_dir)
 from db import SessionLocal, engine, Base
 from models import (
     Seccion, Producto, Plato, Postre, Bebida,
-    Sector, Mesa, MedioPago, Cliente, Mozo
+    Sector, Mesa, MedioPago, Cliente, Mozo, Comanda, DetalleComanda
 )
 
 # Importar seeders
@@ -31,6 +31,9 @@ def limpiar_datos(session):
     """Limpia todos los datos existentes"""
     print("⚠️  Limpiando datos existentes...")
     try:
+        # Limpiar en orden de dependencias (primero las tablas dependientes)
+        session.query(DetalleComanda).delete()
+        session.query(Comanda).delete()
         session.query(Mesa).delete()
         session.query(Mozo).delete()
         session.query(Cliente).delete()
@@ -71,7 +74,7 @@ def main():
         mozos = seed_mozos(session, sectores)
         medios_pago = seed_medio_pago(session)
         clientes = seed_clientes(session)
-        comandas = seed_comandas(session)
+        comandas = seed_comandas(session, mozos, mesas, productos)
 
         print("=" * 50)
         print("✅ ¡Carga de datos completada exitosamente!")

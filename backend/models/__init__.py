@@ -7,8 +7,9 @@ from .medio_pago import MedioPago
 from .mozo import Mozo
 from .cliente import Cliente
 from .comanda import Comanda
+from .detalle_comanda import DetalleComanda
 
 # Exporta todos los modelos
-__all__ = ['Seccion', 'Producto', 'Plato', 'Postre', 'Bebida', 'Sector', 'Mesa', 'MedioPago', 'Mozo', 'Cliente', 'Comanda']
+__all__ = ['Seccion', 'Producto', 'Plato', 'Postre', 'Bebida', 'Sector', 'Mesa', 'MedioPago', 'Mozo', 'Cliente', 'Comanda', 'DetalleComanda']
 
 
