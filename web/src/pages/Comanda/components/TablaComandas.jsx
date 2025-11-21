@@ -37,22 +37,25 @@ const TablaComandas = ({ comandas, onEdit, onDelete }) => {
       </thead>
         <tbody>
         {comandas.map((comanda) => (
-            <tr key={comanda.id_comanda}>
-                <td>{comanda.mesa ? (
-                    <Badge bg="info">#{comanda.mesa.numero}</Badge>
-                ) : (
-                    <span className="text-muted">-</span>
-                )}</td>
-                <td>{comanda.mozo ? (
-                    <Badge bg="info">{comanda.mozo.nombre}</Badge>
-                ) : (   
-                    <span className="text-muted">-</span>
-                )}</td>
-                <td>
-                    <Badge bg={comanda.baja ? 'danger' : 'success'}>
-                        {comanda.baja ? 'Inactiva' : 'Activa'}
-                    </Badge>
-                </td>
+    <tr key={comanda.id_comanda}>
+      <td>
+        <Badge bg="info">#{comanda.id_comanda}</Badge>
+      </td>
+      <td>{comanda.mesa ? (
+        <Badge bg="info">Mesa {comanda.mesa.numero}</Badge>
+      ) : (
+        <span className="text-muted">-</span>
+      )}</td>
+      <td>{comanda.mozo ? (
+        <span>{comanda.mozo.nombre}</span>
+      ) : (   
+        <span className="text-muted">-</span>
+      )}</td>
+      <td>
+        <Badge bg={comanda.baja ? 'danger' : 'success'}>
+          {comanda.baja ? 'Inactiva' : 'Activa'}
+        </Badge>
+      </td>
                 <td>
                     <Button
                         variant="primary"

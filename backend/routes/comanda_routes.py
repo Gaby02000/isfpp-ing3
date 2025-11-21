@@ -89,8 +89,9 @@ def create_comanda():
         # Validar campos obligatorios
         campos_requeridos = ['fecha', 'id_mozo', 'id_mesa']
         for campo in campos_requeridos:
-            if campo not in data or not data[campo] is None:
-                return jsonify({'status':'error', 'message': f'El campo "{campo}" es requerido'}), 400
+            for campo in campos_requeridos:
+                if campo not in data or data[campo] is None or data[campo] == '':
+                    return jsonify({'status':'error', 'message': f'El campo "{campo}" es requerido'}), 400
             
         # Validar tipos de datos
         if not isinstance(data['fecha'], str) or not isinstance(data['id_mozo'], int) or not isinstance(data['id_mesa'], int):

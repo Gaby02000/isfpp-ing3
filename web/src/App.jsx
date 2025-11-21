@@ -29,7 +29,7 @@ function AppContent() {
         <Route path="/gestion/secciones" element={<Secciones/>} />
         <Route path="/gestion/medio-pagos" element={<MedioPagos />} />
         <Route path="/gestion/clientes" element={<Clientes />} />
-        <Route path="/comanda/comandas" element={<Comandas />} />
+        <Route path="/gestion/comandas" element={<Comandas />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Plantilla>
