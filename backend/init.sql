@@ -116,6 +116,22 @@ CREATE TABLE IF NOT EXISTS comanda (
         ON DELETE RESTRICT
 );
 
+CREATE TABLE IF NOT EXISTS factura (
+    id_factura SERIAL PRIMARY KEY, 
+    codigo INT NOT NULL,
+    fecha VARCHAR(50) NOT NULL,
+    total 
+    CONSTRAINT fk_factura_cliente FOREIGN KEY (id_cliente)
+        REFERENCES cliente(id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+    CONSTRAINT fk_factura_comanda FOREIGN KEY (id_comanda)
+        REFERENCES comanda(id_comanda)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+
+)
+
 -- Inserciones
 INSERT INTO seccion (nombre, baja) VALUES
 ('xd', FALSE),

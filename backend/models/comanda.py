@@ -11,7 +11,6 @@ class Comanda(Base):
     fecha_cierre = Column(String(50), nullable=True)
     id_mozo = Column(Integer, ForeignKey('mozo.id'), nullable=False)
     id_mesa = Column(Integer, ForeignKey('mesa.id_mesa'), nullable=False)
-    id_cliente = Column(Integer, ForeignKey('cliente.id_cliente'), nullable=True)
     estado = Column(String(20), nullable=False, default='Abierta')
     observaciones = Column(Text, nullable=True)
     baja = Column(Boolean, default=False)
@@ -19,15 +18,13 @@ class Comanda(Base):
     # Relaciones
     mesa = relationship("Mesa", back_populates="comandas")
     mozo = relationship("Mozo", back_populates="comandas")
-    cliente = relationship("Cliente", back_populates="comandas")
     detalles = relationship("DetalleComanda", back_populates="comanda", cascade="all, delete-orphan")
 
-    def __init__(self, fecha, id_mozo, id_mesa, fecha_cierre=None, id_cliente=None, estado='Abierta', observaciones=None, baja=False):
+    def __init__(self, fecha, id_mozo, id_mesa, fecha_cierre=None, estado='Abierta', observaciones=None, baja=False):
         self.fecha = fecha
         self.fecha_cierre = fecha_cierre
         self.id_mozo = id_mozo
         self.id_mesa = id_mesa
-        self.id_cliente = id_cliente
         self.estado = estado
         self.observaciones = observaciones
         self.baja = baja
@@ -48,8 +45,6 @@ class Comanda(Base):
             'mozo': self.mozo.json() if self.mozo else None,
             'id_mesa': self.id_mesa,
             'mesa': self.mesa.json() if self.mesa else None,
-            'id_cliente': self.id_cliente,
-            'cliente': self.cliente.json() if self.cliente else None,
             'estado': self.estado,
             'observaciones': self.observaciones,
             'baja': self.baja,
