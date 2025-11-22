@@ -10,22 +10,72 @@ const ModalReservas = ({
   editingReserva,
   onSubmit,
   clientes,
-  mesas
+  mesas,
+  // Si true enviamos ISO UTC, si false enviamos 'YYYY-MM-DD HH:MM:SS' (preserva hora local)
+  sendUtc = false
 }) => {
+
+  // Helpers para convertir formatos de fecha entre backend, input datetime-local y envio
+  const pad = (n) => String(n).padStart(2, '0');
+
+  // Convierte string backend o ISO a formato aceptado por input datetime-local: 'YYYY-MM-DDTHH:MM'
+  const formatDateToDateTimeLocal = (input) => {
+    if (!input) return '';
+    let s = String(input).trim();
+    // Reemplazar espacio por T si viene como 'YYYY-MM-DD HH:MM:SS'
+    if (s.includes(' ') && !s.includes('T')) s = s.replace(' ', 'T');
+    // Añadir segundos si falta
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(s)) s = s + ':00';
+
+    const d = new Date(s);
+    if (isNaN(d.getTime())) return '';
+    const year = d.getFullYear();
+    const month = pad(d.getMonth() + 1);
+    const day = pad(d.getDate());
+    const hour = pad(d.getHours());
+    const minute = pad(d.getMinutes());
+    return `${year}-${month}-${day}T${hour}:${minute}`;
+  };
+
+  // Convierte 'YYYY-MM-DDTHH:MM' a 'YYYY-MM-DD HH:MM:SS' (preserva hora local)
+  const dateTimeLocalToBackendFormat = (localString) => {
+    if (!localString) return null;
+    const t = localString.replace('T', ' ');
+    if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(t)) return t + ':00';
+    return t;
+  };
+
+  // Convierte 'YYYY-MM-DDTHH:MM' a ISO UTC (toISOString)
+  const dateTimeLocalToISOStringUTC = (localString) => {
+    if (!localString) return null;
+    // Crear Date usando la interpretación local
+    const d = new Date(localString);
+    if (isNaN(d.getTime())) return null;
+    return d.toISOString();
+  };
+
   return (
     <Modal show={show} onHide={onHide} size="lg">
       <Formik
         initialValues={{
           numero: editingReserva?.numero || '',
-          fecha_hora: editingReserva?.fecha_hora || '',
+          fecha_hora: editingReserva ? formatDateToDateTimeLocal(editingReserva.fecha_hora) : '',
           cant_personas: editingReserva?.cant_personas || '',
           id_cliente: editingReserva?.id_cliente || '',
           id_mesa: editingReserva?.id_mesa || '',
         }}
         validationSchema={reservaValidationSchema}
         onSubmit={(values, actions) => {
-          console.log("Formik onSubmit ejecutado", values);
-          onSubmit(values, actions);
+          // Convertir fecha antes de enviar al parent
+          const out = { ...values };
+          if (values.fecha_hora) {
+            if (sendUtc) {
+              out.fecha_hora = dateTimeLocalToISOStringUTC(values.fecha_hora);
+            } else {
+              out.fecha_hora = dateTimeLocalToBackendFormat(values.fecha_hora);
+            }
+          }
+          onSubmit(out, actions);
         }}
       >
         {({ handleSubmit, handleChange, handleBlur, values, touched, errors, isSubmitting }) => (

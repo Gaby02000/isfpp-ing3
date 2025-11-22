@@ -205,3 +205,7 @@ VALUES (1002, '2025-11-26 21:00:00', 2, 2, 2, FALSE, CURRENT_TIMESTAMP, CURRENT_
 INSERT INTO reserva (numero, fecha_hora, cant_personas, id_cliente, id_mesa, cancelado, fecha_creacion, fecha_modificacion, motivo_cancelacion, senia_devuelta, senia_recuperada, asistida)
 VALUES (1003, '2025-11-27 19:00:00', 6, 3, 3, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, FALSE, FALSE, FALSE);
 
+-- Reserva marcada como AUSENCIA (fecha pasada)
+INSERT INTO reserva (numero, fecha_hora, cant_personas, id_cliente, id_mesa, cancelado, fecha_creacion, fecha_modificacion, motivo_cancelacion, senia_devuelta, senia_recuperada, asistida)
+VALUES (1004, '2025-10-15 20:00:00', 4, 1, 1, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'ausencia', FALSE, TRUE, FALSE);
+

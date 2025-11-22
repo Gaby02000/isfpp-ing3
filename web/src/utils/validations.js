@@ -103,24 +103,41 @@ export const medioPagoValidationSchema = Yup.object({
 
 export const reservaValidationSchema = Yup.object({
   numero: Yup.number()
+    .transform((value, original) => (original === '' || original === null ? undefined : Number(original)))
+    .typeError('El número de reserva debe ser un número')
     .required('El número de reserva es obligatorio')
     .positive('Debe ser un número positivo')
     .integer('Debe ser un número entero'),
 
-  fecha_hora: Yup.date()
+  fecha_hora: Yup.string()
     .required('La fecha y hora de la reserva son obligatorias')
-    .min(new Date(), 'La fecha debe ser futura'),
+    .test('is-valid-date', 'Fecha/hora inválida', value => {
+      if (!value) return false;
+      const d = new Date(value);
+      return !isNaN(d.getTime());
+    })
+    .test('is-future', 'La fecha debe ser futura', value => {
+      if (!value) return false;
+      const d = new Date(value);
+      return d.getTime() > Date.now();
+    }),
 
   cant_personas: Yup.number()
+    .transform((value, original) => (original === '' || original === null ? undefined : Number(original)))
+    .typeError('La cantidad de personas debe ser un número')
     .required('La cantidad de personas es obligatoria')
     .positive('Debe ser mayor a 0')
     .integer('Debe ser un número entero'),
 
   id_cliente: Yup.number()
+    .transform((value, original) => (original === '' || original === null ? undefined : Number(original)))
+    .typeError('Debe seleccionar un cliente válido')
     .required('Debe seleccionar un cliente')
     .positive('Debe seleccionar un cliente válido'),
 
   id_mesa: Yup.number()
+    .transform((value, original) => (original === '' || original === null ? undefined : Number(original)))
+    .typeError('Debe seleccionar una mesa válida')
     .required('Debe seleccionar una mesa')
     .positive('Debe seleccionar una mesa válida'),
 
