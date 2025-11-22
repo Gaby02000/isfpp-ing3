@@ -1,7 +1,7 @@
 import React from 'react';
 import { Table, Button, Badge } from 'react-bootstrap';
 
-const TablaReservas = ({ reservas, clientes = [], mesas = [], onEdit, onCancel }) => {
+const TablaReservas = ({ reservas, clientes = [], mesas = [], onEdit, onCancel, onView }) => {
 
   const getClienteLabel = (id_cliente) => {
   const cliente = clientes.find(c => c.id_cliente === id_cliente);
@@ -74,13 +74,26 @@ const TablaReservas = ({ reservas, clientes = [], mesas = [], onEdit, onCancel }
 
             {/* Estado */}
             <td>
-              <Badge bg={reserva.cancelado ? 'danger' : 'success'}>
-                {reserva.cancelado ? 'Cancelada' : 'Activa'}
-              </Badge>
+              {(() => {
+                // Preferir estado derivado desde backend si viene
+                const estado = reserva.estado || (reserva.cancelado ? (reserva.motivo_cancelacion === 'ausencia' ? 'por ausencia' : 'cancelada') : 'activa');
+                if (estado === 'activa') return <Badge bg="success">Activa</Badge>;
+                if (estado === 'por ausencia') return <Badge bg="secondary">Por ausencia</Badge>;
+                return <Badge bg="danger">Cancelada</Badge>;
+              })()}
             </td>
 
             {/* Acciones */}
             <td>
+              <Button
+                variant="info"
+                size="sm"
+                className="me-2"
+                onClick={() => onView && onView(reserva)}
+              >
+                Ver
+              </Button>
+
               <Button
                 variant="warning"
                 size="sm"

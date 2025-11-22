@@ -1,5 +1,5 @@
-import React from 'react';
-import { Modal, Button } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Modal, Button, Form } from 'react-bootstrap';
 
 const ModalBajaReserva = ({
   show,
@@ -7,7 +7,14 @@ const ModalBajaReserva = ({
   reserva,
   onConfirm
 }) => {
+  const [motivo, setMotivo] = useState('');
+  const [seniaDevuelta, setSeniaDevuelta] = useState(false);
+
   if (!reserva) return null;
+
+  const handleConfirm = () => {
+    onConfirm({ motivo, senia_devuelta: seniaDevuelta });
+  };
 
   return (
     <Modal show={show} onHide={onHide}>
@@ -27,12 +34,34 @@ const ModalBajaReserva = ({
             <em>⚠️ Esta reserva ya está cancelada</em>
           </p>
         )}
+
+        <Form className="mt-3">
+          <Form.Group className="mb-2">
+            <Form.Label>Motivo de cancelación</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={2}
+              placeholder="Indique el motivo de la cancelación"
+              value={motivo}
+              onChange={(e) => setMotivo(e.target.value)}
+            />
+          </Form.Group>
+
+          <Form.Group>
+            <Form.Check
+              type="checkbox"
+              label="Devolver seña"
+              checked={seniaDevuelta}
+              onChange={(e) => setSeniaDevuelta(e.target.checked)}
+            />
+          </Form.Group>
+        </Form>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onHide}>
           Volver
         </Button>
-        <Button variant="danger" onClick={onConfirm}>
+        <Button variant="danger" onClick={handleConfirm} disabled={!motivo}>
           Confirmar Cancelación
         </Button>
       </Modal.Footer>

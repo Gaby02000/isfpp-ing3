@@ -109,6 +109,11 @@ CREATE TABLE IF NOT EXISTS reserva (
     id_mesa INT NOT NULL, -- FK a la mesa
     cancelado BOOLEAN DEFAULT FALSE, -- inicializa en "No" (FALSE)
     fecha_creacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, -- fecha de creación
+    fecha_modificacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    motivo_cancelacion VARCHAR(255),
+    senia_devuelta BOOLEAN DEFAULT FALSE,
+    senia_recuperada BOOLEAN DEFAULT FALSE,
+    asistida BOOLEAN DEFAULT FALSE,
 
     -- Relaciones
     CONSTRAINT fk_reserva_cliente FOREIGN KEY (id_cliente)
@@ -188,14 +193,15 @@ VALUES (6, 'VIP', 10, 3, FALSE);
 
 
 -- Reserva en mesa 1 para cliente 1
-INSERT INTO reserva (numero, fecha_hora, cant_personas, id_cliente, id_mesa, cancelado)
-VALUES (1001, '2025-11-25 20:30:00', 4, 1, 1, FALSE);
+-- Reserva en mesa 1 para cliente 1
+INSERT INTO reserva (numero, fecha_hora, cant_personas, id_cliente, id_mesa, cancelado, fecha_creacion, fecha_modificacion, motivo_cancelacion, senia_devuelta, senia_recuperada, asistida)
+VALUES (1001, '2025-11-25 20:30:00', 4, 1, 1, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, FALSE, FALSE, FALSE);
 
 -- Reserva en mesa 2 para cliente 2
-INSERT INTO reserva (numero, fecha_hora, cant_personas, id_cliente, id_mesa, cancelado)
-VALUES (1002, '2025-11-26 21:00:00', 2, 2, 2, FALSE);
+INSERT INTO reserva (numero, fecha_hora, cant_personas, id_cliente, id_mesa, cancelado, fecha_creacion, fecha_modificacion, motivo_cancelacion, senia_devuelta, senia_recuperada, asistida)
+VALUES (1002, '2025-11-26 21:00:00', 2, 2, 2, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, FALSE, FALSE, FALSE);
 
 -- Reserva en mesa 3 para cliente 3
-INSERT INTO reserva (numero, fecha_hora, cant_personas, id_cliente, id_mesa, cancelado)
-VALUES (1003, '2025-11-27 19:00:00', 6, 3, 3, FALSE);
+INSERT INTO reserva (numero, fecha_hora, cant_personas, id_cliente, id_mesa, cancelado, fecha_creacion, fecha_modificacion, motivo_cancelacion, senia_devuelta, senia_recuperada, asistida)
+VALUES (1003, '2025-11-27 19:00:00', 6, 3, 3, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, FALSE, FALSE, FALSE);
 

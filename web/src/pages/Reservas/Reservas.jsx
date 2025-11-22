@@ -9,10 +9,11 @@ import FiltrosReserva from './components/FiltrosReserva';
 import TablaReservas from './components/TablaReservas';
 import ModalReservas from './components/ModalReservas';
 import ModalBajaReserva from './components/ModalBajaReserva';
+import ModalDetalleReserva from './components/ModalDetalleReserva';
 import Paginacion from '../../components/common/Paginacion';
 
 const Reservas = () => {
-  const { getReservas, createReserva, updateReserva, cancelarReserva, loading } = useReservaService();
+  const { getReservas, getReserva, createReserva, updateReserva, cancelarReserva, loading } = useReservaService();
   const { getClientes } = useClienteService();
   const { getMesas } = useMesaService();
 
@@ -23,6 +24,8 @@ const Reservas = () => {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [editingReserva, setEditingReserva] = useState(null);
   const [cancelingReserva, setCancelingReserva] = useState(null);
+  const [detalleReserva, setDetalleReserva] = useState(null);
+  const [showDetalleModal, setShowDetalleModal] = useState(false);
   const [alert, setAlert] = useState(null);
 
   const [pagination, setPagination] = useState({
@@ -35,7 +38,7 @@ const Reservas = () => {
   });
 
   const [filtros, setFiltros] = useState({
-    estado: '',
+    cancelado: '',
     cliente_id: '',
     fecha_desde: '',
     fecha_hasta: '',
@@ -53,15 +56,21 @@ const Reservas = () => {
 
   useEffect(() => {
     loadReservas();
-  }, [pagination.page, filtros.estado, filtros.cliente_id, filtros.fecha_desde, filtros.fecha_hasta, filtros.cant_min, filtros.cant_max]);
+  }, [pagination.page, filtros.cancelado, filtros.cliente_id, filtros.fecha_desde, filtros.fecha_hasta, filtros.cant_min, filtros.cant_max]);
 
   const loadReservas = async (page = pagination.page) => {
     try {
       const filters = {
         page,
         per_page: pagination.per_page,
-        estado: filtros.estado || undefined,
-        cliente_id: filtros.cliente_id || undefined
+        cancelado: filtros.cancelado || undefined,
+        cliente_id: filtros.cliente_id || undefined,
+        fecha_desde: filtros.fecha_desde || undefined,
+        fecha_hasta: filtros.fecha_hasta || undefined,
+        // opcionales: cant_min/cant_max pueden manejarse en frontend o pasarse al backend si se implementa
+        //cant_min: filtros.cant_min || undefined,
+        //cant_max: filtros.cant_max || undefined,
+        order_by: filtros.order_by || undefined
       };
 
       const response = await getReservas(filters);
@@ -128,6 +137,18 @@ const Reservas = () => {
     setShowCancelModal(true);
   };
 
+  const handleView = async (reserva) => {
+    try {
+      const resp = await getReserva(reserva.id_reserva);
+      // resp is axios response.data (backend wrapper { status, data })
+      const detalle = resp.data || resp;
+      setDetalleReserva(detalle);
+      setShowDetalleModal(true);
+    } catch (error) {
+      setAlert({ variant: 'danger', message: error.message });
+    }
+  };
+
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
       const payload = {
@@ -157,9 +178,10 @@ const Reservas = () => {
     }
   };
 
-  const handleConfirmCancel = async () => {
+  // onConfirm desde el ModalBajaReserva pasará un objeto { motivo, senia_devuelta }
+  const handleConfirmCancel = async (body) => {
     try {
-      await cancelarReserva(cancelingReserva.id_reserva);
+      await cancelarReserva(cancelingReserva.id_reserva, body);
       setAlert({ variant: 'success', message: 'Reserva cancelada exitosamente' });
       setShowCancelModal(false);
       setCancelingReserva(null);
@@ -177,7 +199,7 @@ const Reservas = () => {
 
   const handleLimpiarFiltros = () => {
     setFiltros({
-      estado: '',
+      cancelado: '',
       cliente_id: '',
       fecha_desde: '',
       fecha_hasta: '',
@@ -229,6 +251,7 @@ const Reservas = () => {
         mesas={mesas}
         onEdit={handleEdit}
         onCancel={handleCancel}
+        onView={handleView}
       />
 
       <Paginacion
@@ -246,6 +269,12 @@ const Reservas = () => {
         onSubmit={handleSubmit}
         clientes={clientes}
         mesas={mesas}
+      />
+
+      <ModalDetalleReserva
+        show={showDetalleModal}
+        onHide={() => setShowDetalleModal(false)}
+        reserva={detalleReserva}
       />
 
       <ModalBajaReserva

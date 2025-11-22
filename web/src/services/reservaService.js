@@ -12,8 +12,11 @@ export const useReservaService = () => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
-      if (filters.estado) params.append('estado', filters.estado); // activo/cancelado
+      if (filters.cancelado) params.append('cancelado', filters.cancelado); // activo/cancelado
       if (filters.cliente_id) params.append('cliente_id', filters.cliente_id);
+      if (filters.fecha_desde) params.append('fecha_desde', filters.fecha_desde);
+      if (filters.fecha_hasta) params.append('fecha_hasta', filters.fecha_hasta);
+      if (filters.order_by) params.append('order_by', filters.order_by);
       if (filters.page) params.append('page', filters.page);
       if (filters.per_page) params.append('per_page', filters.per_page);
 
@@ -72,10 +75,10 @@ export const useReservaService = () => {
   }, []);
 
   // Cancelar una reserva (PUT /cancelar)
-  const cancelarReserva = useCallback(async (id) => {
+  const cancelarReserva = useCallback(async (id, body = {}) => {
     try {
       setLoading(true);
-      const response = await axios.put(`${BACKEND_URL}/api/reservas/${id}/cancelar`);
+      const response = await axios.put(`${BACKEND_URL}/api/reservas/${id}/cancelar`, body);
       return response.data;
     } catch (error) {
       setError(error.response?.data?.message || 'Error al cancelar la reserva');
