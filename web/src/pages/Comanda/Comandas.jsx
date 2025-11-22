@@ -3,6 +3,7 @@ import { Container, Button, Alert } from 'react-bootstrap';
 import { useComandaService } from '../../services/comandaService';
 import { useMesaService } from '../../services/mesaService';
 import { useMozoService } from '../../services/mozoService';
+import { useProductoService } from '../../services/productoService';
 import Cargador from '../../components/common/Cargador';
 import PageHeader from '../../components/common/PageHeader';
 import FiltrosComandas from './components/FiltrosComandas';
@@ -13,11 +14,14 @@ import Paginacion from '../../components/common/Paginacion';
 
 const Comandas = () => {
     const { getComandas, createComanda, updateComanda, deleteComanda, loading } = useComandaService();
-    const { getTodasMesas } = useMesaService();
-    const { getTodosMozos } = useMozoService();
+    const { getMesasDisponibles} = useMesaService();
+    const { getMozos } = useMozoService();
+    const { getProductos } = useProductoService();
+
     const [comandas, setComandas] = useState([]);
     const [mesas, setMesas] = useState([]);
     const [mozos, setMozos] = useState([]);
+    const [productos, setProductos] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [editingComanda, setEditingComanda] = useState(null);
@@ -44,6 +48,7 @@ const Comandas = () => {
         loadComandas();
         loadMesas();
         loadMozos();
+        loadProductos();
     }, []);
 
     useEffect(() => {
@@ -87,7 +92,7 @@ const Comandas = () => {
 
     const loadMesas = async () => {
         try {
-            const response = await getTodasMesas();
+            const response = await getMesasDisponibles();
             setMesas(response.data || []);
         } catch (error) {
             setAlert({ variant: 'danger', message: error.message });
@@ -96,8 +101,17 @@ const Comandas = () => {
 
     const loadMozos = async () => {
         try {
-            const response = await getTodosMozos();
+            const response = await getMozos();
             setMozos(response.data || []);
+        } catch (error) {
+            setAlert({ variant: 'danger', message: error.message });
+        }
+    };
+
+    const loadProductos = async () => {
+        try {
+            const response = await getProductos();
+            setProductos(response.data || []);
         } catch (error) {
             setAlert({ variant: 'danger', message: error.message });
         }
@@ -105,16 +119,24 @@ const Comandas = () => {
 
 //Filtrar comandas solo por busqueda (filtros ya vienen del backend)
     const comandasFiltradas = useMemo(() => {
-        let filtered = [...comandas];
-        if (busqueda) {
-            const busquedaLower = busqueda.toLowerCase();
-            filtered = filtered.filter(comanda =>
-                comanda.mesa.numero.toString().includes(busquedaLower) ||
-                comanda.mozo.nombre.toLowerCase().includes(busquedaLower)
-            );
-        }
-        return filtered;
-    }, [comandas, busqueda]);
+  let filtered = [...comandas];
+  if (busqueda) {
+    const busquedaLower = busqueda.toLowerCase();
+    filtered = filtered.filter(comanda => {
+      // Buscar por número de comanda
+      const matchComanda = comanda.id_comanda?.toString().includes(busquedaLower);
+      
+      // Buscar por número de mesa
+      const matchMesa = comanda.mesa?.numero?.toString().includes(busquedaLower);
+      
+      // Buscar por nombre de mozo
+      const matchMozo = comanda.mozo?.nombre_apellido?.toLowerCase().includes(busquedaLower);
+      
+      return matchComanda || matchMesa || matchMozo;
+    });
+  }
+  return filtered;
+}, [comandas, busqueda]);
 
     const handleCreate = () => {
         setEditingComanda(null);
@@ -170,15 +192,15 @@ const Comandas = () => {
   };
 
   const handleLimpiarFiltros = () => {
-    setFiltros({
-      numero: '',
-      sector_id: '',
-      tipo: '',
-      estado: ''
-    });
-    setBusqueda('');
-    setPagination(prev => ({ ...prev, page: 1 }));
-  };
+  setFiltros({
+    fecha: '',
+    id_mozo: '',
+    id_mesa: '',
+    estado: ''
+  });
+  setBusqueda('');
+  setPagination(prev => ({ ...prev, page: 1 }));
+};
 
   const handlePageChange = (page) => {
     setPagination(prev => ({ ...prev, page }));

@@ -131,12 +131,18 @@ def create_comanda():
             }), 400
         
         # Validar cliente si se proporciona
-        id_cliente = data.get('id_cliente')
-        if id_cliente:
-            cliente = session.query(Cliente).filter_by(id_cliente=id_cliente, baja=False).first()
-            if not cliente:
-                return jsonify({'status':'error', 'message': f'No existe un cliente activo con id_cliente {id_cliente}'}), 400
+        #id_cliente = data.get('id_cliente')
+        #if id_cliente:
+          #  cliente = session.query(Cliente).filter_by(id_cliente=id_cliente, baja=False).first()
+           # if not cliente:
+             #   return jsonify({'status':'error', 'message': f'No existe un cliente activo con id_cliente {id_cliente}'}), 400
             
+        id_cliente = data.get('id_cliente')
+        if id_cliente == '' or id_cliente is None:
+            id_cliente = None
+        else:
+            id_cliente = int(id_cliente)
+
         # Crear comanda
         nueva_comanda = Comanda(
             fecha=data['fecha'],
@@ -144,7 +150,7 @@ def create_comanda():
             id_mesa=data['id_mesa'],
             id_cliente=id_cliente,
             estado='Abierta',
-            observaciones=data.get('observaciones')
+            observaciones=data.get('observaciones') or None
         )
         session.add(nueva_comanda)
         session.flush()  # Para obtener el id_comanda
@@ -229,7 +235,7 @@ def modificar_comanda(id):
             comanda.fecha = data['fecha']
 
         if 'id_mozo' in data:
-            # CORREGIDO: usar 'id' en lugar de 'id_mozo'
+            
             nuevo_mozo = session.query(Mozo).filter_by(id=data['id_mozo']).first()
             if not nuevo_mozo:
                 return jsonify({'status':'error', 'message': f'No existe un mozo con id {data["id_mozo"]}'}), 400

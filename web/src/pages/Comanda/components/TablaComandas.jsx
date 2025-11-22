@@ -28,8 +28,8 @@ const TablaComandas = ({ comandas, onEdit, onDelete }) => {
     <Table striped bordered hover responsive>
       <thead>
         <tr>
-            <th>Número de Comanda</th>
-            <th>Número de Mesa</th>
+            <th>N° Comanda</th>
+            <th>N° Mesa</th>
             <th>Mozo</th>
             <th>Estado</th>
             <th>Acciones</th>
@@ -47,7 +47,7 @@ const TablaComandas = ({ comandas, onEdit, onDelete }) => {
         <span className="text-muted">-</span>
       )}</td>
       <td>{comanda.mozo ? (
-        <span>{comanda.mozo.nombre}</span>
+        <span>{comanda.mozo.nombre_apellido}</span>
       ) : (   
         <span className="text-muted">-</span>
       )}</td>
