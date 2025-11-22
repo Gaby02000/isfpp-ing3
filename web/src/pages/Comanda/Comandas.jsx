@@ -3,6 +3,7 @@ import { Container, Button, Alert } from 'react-bootstrap';
 import { useComandaService } from '../../services/comandaService';
 import { useMesaService } from '../../services/mesaService';
 import { useMozoService } from '../../services/mozoService';
+import { useClienteService } from '../../services/clienteService';
 import { useProductoService } from '../../services/productoService';
 import Cargador from '../../components/common/Cargador';
 import PageHeader from '../../components/common/PageHeader';
@@ -16,11 +17,13 @@ const Comandas = () => {
     const { getComandas, createComanda, updateComanda, deleteComanda, loading } = useComandaService();
     const { getMesasDisponibles} = useMesaService();
     const { getMozos } = useMozoService();
+    const { getClientes } = useClienteService();
     const { getProductos } = useProductoService();
 
     const [comandas, setComandas] = useState([]);
     const [mesas, setMesas] = useState([]);
     const [mozos, setMozos] = useState([]);
+    const [clientes, setClientes] = useState([]);
     const [productos, setProductos] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -48,6 +51,7 @@ const Comandas = () => {
         loadComandas();
         loadMesas();
         loadMozos();
+        loadClientes();
         loadProductos();
     }, []);
 
@@ -94,6 +98,15 @@ const Comandas = () => {
         try {
             const response = await getMesasDisponibles();
             setMesas(response.data || []);
+        } catch (error) {
+            setAlert({ variant: 'danger', message: error.message });
+        }
+    };
+
+    const loadClientes = async () => {
+        try {
+            const response = await getClientes();
+            setClientes(response.data || []);
         } catch (error) {
             setAlert({ variant: 'danger', message: error.message });
         }
@@ -245,6 +258,8 @@ const Comandas = () => {
                 comanda={editingComanda}
                 mesas={mesas}
                 mozos={mozos}
+                clientes={clientes}
+                productos={productos}
             />
             <ModalBajaComanda
         show={showDeleteModal}

@@ -3,7 +3,7 @@ import { Modal, Button, Form, Row, Col, Table, Badge } from 'react-bootstrap';
 import CampoFormulario from '../../../components/common/CampoFormulario';
 import { Formik, FieldArray } from 'formik';
 import { comandaValidationSchema } from '../../../utils/validations';
-import { useProductoService } from '../../../services/productoService';
+
 
 const ModalComanda = ({ 
   show, 
@@ -12,24 +12,9 @@ const ModalComanda = ({
   onSubmit,
   mesas,
   mozos,
+  productos,
+  clientes,
 }) => {
-  const { getProductos } = useProductoService();
-  const [productos, setProductos] = useState([]);
-
-  useEffect(() => {
-    if (show) {
-      loadProductos();
-    }
-  }, [show]);
-
-  const loadProductos = async () => {
-    try {
-      const response = await getProductos({ activos: 'true' });
-      setProductos(response.data || []);
-    } catch (error) {
-      console.error('Error al cargar productos:', error);
-    }
-  };
 
   const calcularTotal = (productosSeleccionados) => {
     return productosSeleccionados.reduce((total, item) => {
@@ -126,6 +111,30 @@ const ModalComanda = ({
                     </Form.Select>
                     <Form.Control.Feedback type="invalid">
                       {errors.id_mozo}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+                </Col>
+                <Col md={4}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Cliente *</Form.Label>
+                    <Form.Select
+                      name="id_cliente"
+                      value={values.id_cliente}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      isInvalid={touched.id_cliente && errors.id_cliente}
+                    >
+                      <option value="">Seleccione un cliente</option>
+                      {clientes
+                        .filter(cliente => !cliente.baja)
+                        .map((cliente) => (
+                          <option key={cliente.id_cliente} value={cliente.id_cliente}>
+                            {cliente.nombre}
+                          </option>
+                        ))}
+                    </Form.Select>
+                    <Form.Control.Feedback type="invalid">
+                      {errors.id_cliente}
                     </Form.Control.Feedback>
                   </Form.Group>
                 </Col>
