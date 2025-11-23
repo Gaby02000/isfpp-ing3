@@ -13,7 +13,6 @@ const ModalComanda = ({
   mesas,
   mozos,
   productos,
-  clientes,
 }) => {
 
   const calcularTotal = (productosSeleccionados) => {
@@ -33,7 +32,6 @@ const ModalComanda = ({
           fecha: editingComanda?.fecha || new Date().toISOString().split('T')[0],
           id_mesa: editingComanda?.id_mesa || '',
           id_mozo: editingComanda?.id_mozo || '',
-          id_cliente: editingComanda?.id_cliente || '',
           observaciones: editingComanda?.observaciones || '',
           productos: editingComanda?.detalles?.map(d => ({
             id_producto: d.id_producto,
@@ -111,30 +109,6 @@ const ModalComanda = ({
                     </Form.Select>
                     <Form.Control.Feedback type="invalid">
                       {errors.id_mozo}
-                    </Form.Control.Feedback>
-                  </Form.Group>
-                </Col>
-                <Col md={4}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Cliente *</Form.Label>
-                    <Form.Select
-                      name="id_cliente"
-                      value={values.id_cliente}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      isInvalid={touched.id_cliente && errors.id_cliente}
-                    >
-                      <option value="">Seleccione un cliente</option>
-                      {clientes
-                        .filter(cliente => !cliente.baja)
-                        .map((cliente) => (
-                          <option key={cliente.id_cliente} value={cliente.id_cliente}>
-                            {cliente.nombre}
-                          </option>
-                        ))}
-                    </Form.Select>
-                    <Form.Control.Feedback type="invalid">
-                      {errors.id_cliente}
                     </Form.Control.Feedback>
                   </Form.Group>
                 </Col>

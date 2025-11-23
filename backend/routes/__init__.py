@@ -7,6 +7,7 @@ from .medio_pagos_routes import medio_pagos_bp
 from .mozo_routes import mozo_bp
 from .cliente_routes import cliente_bp
 from .comanda_routes import comanda_bp
+from .factura_routes import factura_bp
 
 api_bp = Blueprint('api', __name__)
 api_bp.register_blueprint(seccion_bp, url_prefix='/secciones')
@@ -17,4 +18,5 @@ api_bp.register_blueprint(mozo_bp, url_prefix='/mozos')
 api_bp.register_blueprint(cliente_bp, url_prefix='/clientes')
 api_bp.register_blueprint(medio_pagos_bp, url_prefix='/medio-pagos')
 api_bp.register_blueprint(comanda_bp, url_prefix='/comandas')
+api_bp.register_blueprint(factura_bp, url_prefix='/facturas')
 

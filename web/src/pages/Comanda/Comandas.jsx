@@ -3,32 +3,40 @@ import { Container, Button, Alert } from 'react-bootstrap';
 import { useComandaService } from '../../services/comandaService';
 import { useMesaService } from '../../services/mesaService';
 import { useMozoService } from '../../services/mozoService';
-import { useClienteService } from '../../services/clienteService';
 import { useProductoService } from '../../services/productoService';
+import { useFacturaService } from '../../services/facturaService';
+import { useClienteService } from '../../services/clienteService';
 import Cargador from '../../components/common/Cargador';
 import PageHeader from '../../components/common/PageHeader';
 import FiltrosComandas from './components/FiltrosComandas';
 import TablaComandas from './components/TablaComandas';
 import ModalComanda from './components/ModalComanda';
 import ModalBajaComanda from './components/ModalBajaComanda';
+import ModalGenerarFactura from './components/ModalGenerarFactura';
+import ModalVerFactura from './components/ModalVerFactura';
 import Paginacion from '../../components/common/Paginacion';
 
 const Comandas = () => {
     const { getComandas, createComanda, updateComanda, deleteComanda, loading } = useComandaService();
-    const { getMesasDisponibles} = useMesaService();
+    const { getMesasDisponibles } = useMesaService();
     const { getMozos } = useMozoService();
-    const { getClientes } = useClienteService();
     const { getProductos } = useProductoService();
+    const { generarFacturaDesdeComanda } = useFacturaService();
+    const { getClientes } = useClienteService();
 
     const [comandas, setComandas] = useState([]);
     const [mesas, setMesas] = useState([]);
     const [mozos, setMozos] = useState([]);
-    const [clientes, setClientes] = useState([]);
     const [productos, setProductos] = useState([]);
+    const [clientes, setClientes] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showFacturaModal, setShowFacturaModal] = useState(false);
+    const [showVerFacturaModal, setShowVerFacturaModal] = useState(false);
     const [editingComanda, setEditingComanda] = useState(null);
     const [deletingComanda, setDeletingComanda] = useState(null);
+    const [facturandoComanda, setFacturandoComanda] = useState(null);
+    const [facturaGenerada, setFacturaGenerada] = useState(null);
     const [alert, setAlert] = useState(null);
 
     // Paginación
@@ -40,25 +48,27 @@ const Comandas = () => {
         has_next: false,
         has_prev: false
     });
+
     // Filtros y búsqueda
     const [filtros, setFiltros] = useState({
         fecha: '',
         id_mozo: '',
-        id_mesa: ''
+        id_mesa: '',
+        estado: ''
     });
     const [busqueda, setBusqueda] = useState('');
+
     useEffect(() => {
         loadComandas();
         loadMesas();
         loadMozos();
-        loadClientes();
         loadProductos();
+        loadClientes();
     }, []);
 
     useEffect(() => {
-        // Recargar cuando cambian los filtros o la página
         loadComandas();
-    }, [pagination.page, filtros.id_mozo, filtros.id_mesa, filtros.fecha]);
+    }, [pagination.page, filtros.id_mozo, filtros.id_mesa, filtros.fecha, filtros.estado]);
 
     const loadComandas = async (page = pagination.page) => {
         try {
@@ -70,43 +80,23 @@ const Comandas = () => {
                 fecha: filtros.fecha || undefined,
                 estado: filtros.estado || undefined
             };
-        const response = await getComandas(filters);
-        
+            const response = await getComandas(filters);
 
-        // Aplicar búsqueda local si hay texto de búsqueda
-        let comandasData = response.data || [];
-        if (busqueda) {
-            const busquedaLower = busqueda.toLowerCase();
-            comandasData = comandasData.filter(comanda =>
-                comanda.mesa.numero.toString().includes(busquedaLower) ||
-                comanda.mozo.nombre.toLowerCase().includes(busquedaLower)
-            );
+            let comandasData = response.data || [];
+            setComandas(comandasData);
+
+            if (response.pagination) {  
+                setPagination(response.pagination);
+            }
+        } catch (error) {
+            setAlert({ variant: 'danger', message: error.message });
         }
-
-        setComandas(comandasData);
-// Actualizar paginación
-        if (response.pagination) {  
-            setPagination(response.pagination);
-        }
-    } catch (error) {
-        setAlert({ variant: 'danger', message: error.message });
-    }
-
     };
 
     const loadMesas = async () => {
         try {
             const response = await getMesasDisponibles();
             setMesas(response.data || []);
-        } catch (error) {
-            setAlert({ variant: 'danger', message: error.message });
-        }
-    };
-
-    const loadClientes = async () => {
-        try {
-            const response = await getClientes();
-            setClientes(response.data || []);
         } catch (error) {
             setAlert({ variant: 'danger', message: error.message });
         }
@@ -130,26 +120,28 @@ const Comandas = () => {
         }
     };
 
-//Filtrar comandas solo por busqueda (filtros ya vienen del backend)
+    const loadClientes = async () => {
+        try {
+            const response = await getClientes({ activos: 'true' });
+            setClientes(response.data || []);
+        } catch (error) {
+            setAlert({ variant: 'danger', message: error.message });
+        }
+    };
+
     const comandasFiltradas = useMemo(() => {
-  let filtered = [...comandas];
-  if (busqueda) {
-    const busquedaLower = busqueda.toLowerCase();
-    filtered = filtered.filter(comanda => {
-      // Buscar por número de comanda
-      const matchComanda = comanda.id_comanda?.toString().includes(busquedaLower);
-      
-      // Buscar por número de mesa
-      const matchMesa = comanda.mesa?.numero?.toString().includes(busquedaLower);
-      
-      // Buscar por nombre de mozo
-      const matchMozo = comanda.mozo?.nombre_apellido?.toLowerCase().includes(busquedaLower);
-      
-      return matchComanda || matchMesa || matchMozo;
-    });
-  }
-  return filtered;
-}, [comandas, busqueda]);
+        let filtered = [...comandas];
+        if (busqueda) {
+            const busquedaLower = busqueda.toLowerCase();
+            filtered = filtered.filter(comanda => {
+                const matchComanda = comanda.id_comanda?.toString().includes(busquedaLower);
+                const matchMesa = comanda.mesa?.numero?.toString().includes(busquedaLower);
+                const matchMozo = comanda.mozo?.nombre_apellido?.toLowerCase().includes(busquedaLower);
+                return matchComanda || matchMesa || matchMozo;
+            });
+        }
+        return filtered;
+    }, [comandas, busqueda]);
 
     const handleCreate = () => {
         setEditingComanda(null);
@@ -160,12 +152,18 @@ const Comandas = () => {
         setEditingComanda(comanda);
         setShowModal(true);
     };
+
     const handleDelete = (comanda) => {
         setDeletingComanda(comanda);
         setShowDeleteModal(true);
-    }
+    };
 
-    const handleSubmit = async (values,{ setSubmitting, resetForm}) => {
+    const handleGenerarFactura = (comanda) => {
+        setFacturandoComanda(comanda);
+        setShowFacturaModal(true);
+    };
+
+    const handleSubmit = async (values, { setSubmitting, resetForm }) => {
         try {
             if (editingComanda) {
                 await updateComanda(editingComanda.id_comanda, values);
@@ -188,7 +186,7 @@ const Comandas = () => {
     const handleConfirmDelete = async () => {
         try {
             await deleteComanda(deletingComanda.id_comanda);
-            setAlert({ variant: 'success', message: 'Comanda dada de baja correctamente.' });   
+            setAlert({ variant: 'success', message: 'Comanda cancelada correctamente.' });   
             setShowDeleteModal(false);
             setDeletingComanda(null);
             loadComandas();
@@ -198,39 +196,59 @@ const Comandas = () => {
         }
     };
 
-     const handleFiltroChange = (campo, valor) => {
-    setFiltros(prev => ({ ...prev, [campo]: valor || '' }));
-    // Resetear a página 1 cuando cambian los filtros
-    setPagination(prev => ({ ...prev, page: 1 }));
-  };
+    const handleConfirmGenerarFactura = async (id_cliente) => {
+        try {
+            const response = await generarFacturaDesdeComanda(
+                facturandoComanda.id_comanda,
+                id_cliente
+            );
+            
+            setShowFacturaModal(false);
+            setFacturaGenerada(response.data);
+            setShowVerFacturaModal(true);
+            loadComandas();
+            setFacturandoComanda(null);
+        } catch (error) {
+            setAlert({ variant: 'danger', message: error.message });
+            setTimeout(() => setAlert(null), 5000);
+        }
+    };
 
-  const handleLimpiarFiltros = () => {
-  setFiltros({
-    fecha: '',
-    id_mozo: '',
-    id_mesa: '',
-    estado: ''
-  });
-  setBusqueda('');
-  setPagination(prev => ({ ...prev, page: 1 }));
-};
+    const handleFiltroChange = (campo, valor) => {
+        setFiltros(prev => ({ ...prev, [campo]: valor || '' }));
+        setPagination(prev => ({ ...prev, page: 1 }));
+    };
 
-  const handlePageChange = (page) => {
-    setPagination(prev => ({ ...prev, page }));
-    loadMesas(page);
-  };
+    const handleLimpiarFiltros = () => {
+        setFiltros({
+            fecha: '',
+            id_mozo: '',
+            id_mesa: '',
+            estado: ''
+        });
+        setBusqueda('');
+        setPagination(prev => ({ ...prev, page: 1 }));
+    };
 
-  if (loading && comandas.length === 0) {
-    return <Cargador />;
-  }
+    const handlePageChange = (page) => {
+        setPagination(prev => ({ ...prev, page }));
+        loadComandas(page);
+    };
+
+    if (loading && comandas.length === 0) {
+        return <Cargador />;
+    }
+
     return (
         <Container fluid className="p-4">
-            <PageHeader title="Comandas" 
-            backPath="/gestion"
-        onCreate={handleCreate}
-        createLabel="+ Nueva Comanda"
+            <PageHeader 
+                title="Comandas" 
+                backPath="/gestion"
+                onCreate={handleCreate}
+                createLabel="+ Nueva Comanda"
             />  
-            {alert && <Alert variant={alert.variant}>{alert.message}</Alert>}
+            {alert && <Alert variant={alert.variant} dismissible onClose={() => setAlert(null)}>{alert.message}</Alert>}
+            
             <FiltrosComandas 
                 filtros={filtros}
                 onFiltroChange={handleFiltroChange}
@@ -240,17 +258,21 @@ const Comandas = () => {
                 mesas={mesas}
                 mozos={mozos}
                 comandasFiltradas={comandasFiltradas.length}
+                totalComandas={pagination.total}
             />
+            
             <TablaComandas 
                 comandas={comandasFiltradas}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
+                onGenerarFactura={handleGenerarFactura}
             />
 
             <Paginacion 
                 pagination={pagination}
                 onPageChange={handlePageChange}
             />
+            
             <ModalComanda 
                 show={showModal}
                 onHide={() => setShowModal(false)}
@@ -258,16 +280,35 @@ const Comandas = () => {
                 comanda={editingComanda}
                 mesas={mesas}
                 mozos={mozos}
-                clientes={clientes}
                 productos={productos}
             />
+            
             <ModalBajaComanda
-        show={showDeleteModal}
-        onHide={() => setShowDeleteModal(false)}
-        comanda={deletingComanda}
-        onConfirm={handleConfirmDelete}
-        />
+                show={showDeleteModal}
+                onHide={() => setShowDeleteModal(false)}
+                comanda={deletingComanda}
+                onConfirm={handleConfirmDelete}
+            />
+
+            <ModalGenerarFactura
+                show={showFacturaModal}
+                onHide={() => setShowFacturaModal(false)}
+                comanda={facturandoComanda}
+                onConfirm={handleConfirmGenerarFactura}
+                loading={loading}
+                clientes={clientes}
+            />
+
+            <ModalVerFactura
+                show={showVerFacturaModal}
+                onHide={() => {
+                    setShowVerFacturaModal(false);
+                    setFacturaGenerada(null);
+                }}
+                factura={facturaGenerada}
+            />
         </Container>
     );
-}
+};
+
 export default Comandas;

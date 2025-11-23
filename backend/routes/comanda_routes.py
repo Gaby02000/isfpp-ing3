@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from db import SessionLocal
-from models import Comanda, Mesa, Mozo, Cliente, Producto, DetalleComanda
+from models import Comanda, Mesa, Mozo, Producto, DetalleComanda
 from datetime import datetime
 
 comanda_bp = Blueprint('comanda', __name__)
@@ -114,40 +114,71 @@ def create_comanda():
             return jsonify({'status':'error', 'message': 'No se proporcionaron datos'}), 400
         
         # Validar campos obligatorios
-            campos_requeridos = ['fecha', 'id_mozo', 'id_mesa']
         if 'fecha' not in data or data['fecha'] is None or data['fecha'] == '':
             return jsonify({'status':'error', 'message': f'El campo "fecha" es requerido'}), 400
         
+        # ✅ CONVERTIR id_mozo a entero (o None si está vacío)
+        id_mozo = data.get('id_mozo')
+        if id_mozo == '' or id_mozo is None:
+            return jsonify({'status':'error', 'message': 'El mozo es requerido'}), 400
+        try:
+            id_mozo = int(id_mozo)
+        except (ValueError, TypeError):
+            return jsonify({'status':'error', 'message': 'El id_mozo debe ser un número válido'}), 400
+        
+        # ✅ CONVERTIR id_mesa a entero (o None si está vacío)
+        id_mesa = data.get('id_mesa')
+        if id_mesa == '' or id_mesa is None:
+            return jsonify({'status':'error', 'message': 'La mesa es requerida'}), 400
+        try:
+            id_mesa = int(id_mesa)
+        except (ValueError, TypeError):
+            return jsonify({'status':'error', 'message': 'El id_mesa debe ser un número válido'}), 400
+        
+        # ✅ CONVERTIR id_cliente a entero o None
+        id_cliente = data.get('id_cliente')
+        if id_cliente == '' or id_cliente is None:
+            id_cliente = None
+        else:
+            try:
+                id_cliente = int(id_cliente)
+            except (ValueError, TypeError):
+                return jsonify({'status':'error', 'message': 'El id_cliente debe ser un número válido'}), 400
+        
+        # Ahora sí, validaciones con valores ya convertidos
+        # Validar que el mozo existe y está activo
+        mozo = session.query(Mozo).filter_by(id=id_mozo, baja=False).first()
+        if not mozo:
+            return jsonify({'status':'error', 'message': f'No existe un mozo activo con id {id_mozo}'}), 400
+        
+        # Validar que la mesa existe y está activa
+        mesa = session.query(Mesa).filter_by(id_mesa=id_mesa, baja=False).first()
+        if not mesa:
+            return jsonify({'status':'error', 'message': f'No existe una mesa activa con id_mesa {id_mesa}'}), 400
+        
         # Validar que la mesa no tenga una comanda abierta
         comanda_abierta = session.query(Comanda).filter_by(
-            id_mesa=data['id_mesa'],
+            id_mesa=id_mesa,
             estado='Abierta',
             baja=False
         ).first()
         if comanda_abierta:
             return jsonify({
                 'status':'error',
-                'message': f'La mesa {data["id_mesa"]} ya tiene una comanda abierta (id_comanda: {comanda_abierta.id_comanda})'
+                'message': f'La mesa {id_mesa} ya tiene una comanda abierta (id_comanda: {comanda_abierta.id_comanda})'
             }), 400
         
-        # Validar cliente si se proporciona
-        #id_cliente = data.get('id_cliente')
-        #if id_cliente:
-          #  cliente = session.query(Cliente).filter_by(id_cliente=id_cliente, baja=False).first()
-           # if not cliente:
-             #   return jsonify({'status':'error', 'message': f'No existe un cliente activo con id_cliente {id_cliente}'}), 400
-            
-        id_cliente = data.get('id_cliente')
-        if id_cliente == '' or id_cliente is None:
-            id_cliente = None
-        else:
-            id_cliente = int(id_cliente)
-
+        # Validar cliente si se proporcionó
+        if id_cliente is not None:
+            cliente = session.query(Cliente).filter_by(id_cliente=id_cliente, baja=False).first()
+            if not cliente:
+                return jsonify({'status':'error', 'message': f'No existe un cliente activo con id_cliente {id_cliente}'}), 400
+        
         # Crear comanda
         nueva_comanda = Comanda(
             fecha=data['fecha'],
-            id_mozo=data['id_mozo'],
-            id_mesa=data['id_mesa'],
+            id_mozo=id_mozo,
+            id_mesa=id_mesa,
             id_cliente=id_cliente,
             estado='Abierta',
             observaciones=data.get('observaciones') or None
@@ -161,6 +192,13 @@ def create_comanda():
             for producto_data in productos:
                 id_producto = producto_data.get('id_producto')
                 cantidad = producto_data.get('cantidad', 1)
+                
+                # ✅ Convertir a enteros
+                try:
+                    id_producto = int(id_producto)
+                    cantidad = int(cantidad)
+                except (ValueError, TypeError):
+                    continue
                 
                 if not id_producto or cantidad <= 0:
                     continue
@@ -264,15 +302,6 @@ def modificar_comanda(id):
                     }), 400
             
             comanda.id_mesa = data['id_mesa']
-        
-        if 'id_cliente' in data:
-            if data['id_cliente'] is None:
-                comanda.id_cliente = None
-            else:
-                cliente = session.query(Cliente).filter_by(id_cliente=data['id_cliente'], baja=False).first()
-                if not cliente:
-                    return jsonify({'status':'error', 'message': f'No existe un cliente activo con id_cliente {data["id_cliente"]}'}), 400
-                comanda.id_cliente = data['id_cliente']
         
         if 'observaciones' in data:
             comanda.observaciones = data['observaciones']

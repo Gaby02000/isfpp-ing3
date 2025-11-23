@@ -14,7 +14,9 @@ class Cliente(Base):
     baja = Column(Boolean, default=False)
     
     # Relaciones
-    comandas = relationship("Comanda", back_populates="cliente")
+    #comandas = relationship("Comanda", back_populates="cliente")
+    factura = relationship("Factura", back_populates="cliente")
+
     
     def __init__(self, documento, nombre, apellido, num_telefono, email, baja=False):
         self.documento = documento
