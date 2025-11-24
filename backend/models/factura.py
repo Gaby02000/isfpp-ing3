@@ -11,7 +11,7 @@ class Factura(Base):
     total = Column(Numeric(10,2), nullable=False)
     id_cliente = Column(Integer, ForeignKey('cliente.id_cliente'), nullable=False)
     id_comanda = Column(Integer, ForeignKey('comanda.id_comanda'), nullable=True)
-
+    baja = Column(Boolean, default=False)
     
     # Relaciones
     cliente = relationship("Cliente", back_populates="factura")
@@ -24,6 +24,7 @@ class Factura(Base):
         self.total = total
         self.id_cliente = id_cliente
         self.id_comanda = id_comanda
+        self.baja = False
 
 
     def json(self):
@@ -37,4 +38,5 @@ class Factura(Base):
             'id_comanda': self.id_comanda,
             'comanda': self.comanda.json() if self.comanda else None,
             'detalles': [d.json() for d in self.detalles] if self.detalles else [],
+            'baja': self.baja
         }

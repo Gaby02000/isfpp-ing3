@@ -21,7 +21,7 @@ const Comandas = () => {
     const { getMesasDisponibles } = useMesaService();
     const { getMozos } = useMozoService();
     const { getProductos } = useProductoService();
-    const { generarFacturaDesdeComanda } = useFacturaService();
+    const { generarFacturaDesdeComanda, getFactura, getFacturas } = useFacturaService();
     const { getClientes } = useClienteService();
 
     const [comandas, setComandas] = useState([]);
@@ -235,6 +235,51 @@ const Comandas = () => {
         loadComandas(page);
     };
 
+    const handleVerFactura = async (comanda) => {
+  try {
+    console.log('🔵 [handleVerFactura] Comanda recibida:', comanda);
+    console.log('🔵 [handleVerFactura] id_comanda:', comanda.id_comanda);
+    
+    // Buscar la factura por id_comanda
+    const facturasResponse = await getFacturas({ 
+      id_comanda: comanda.id_comanda, 
+      per_page: 1 
+    });
+    
+    console.log('🔵 [handleVerFactura] Respuesta completa:', facturasResponse);
+    console.log('🔵 [handleVerFactura] facturasResponse.data:', facturasResponse.data);
+    console.log('🔵 [handleVerFactura] Cantidad de facturas:', facturasResponse.data?.length);
+    
+    if (facturasResponse && facturasResponse.data && facturasResponse.data.length > 0) {
+      const facturaEncontrada = facturasResponse.data[0];
+      console.log('✅ [handleVerFactura] Factura encontrada:', facturaEncontrada);
+      console.log('✅ [handleVerFactura] id_factura:', facturaEncontrada.id_factura);
+      
+      const id_factura = facturaEncontrada.id_factura;
+      
+      const facturaResponse = await getFactura(id_factura);
+      console.log('✅ [handleVerFactura] Detalles completos:', facturaResponse.data);
+      
+      setFacturaGenerada(facturaResponse.data);
+      setShowVerFacturaModal(true);
+    } else {
+      console.warn('⚠️ [handleVerFactura] No se encontró factura');
+      console.warn('⚠️ [handleVerFactura] facturasResponse era:', facturasResponse);
+      setAlert({ 
+        variant: 'warning', 
+        message: `⚠️ No se encontró una factura para la comanda #${comanda.id_comanda}.` 
+      });
+      setTimeout(() => setAlert(null), 5000);
+    }
+  } catch (error) {
+    console.error('❌ [handleVerFactura] Error completo:', error);
+    console.error('❌ [handleVerFactura] Error message:', error.message);
+    console.error('❌ [handleVerFactura] Error response:', error.response);
+    setAlert({ variant: 'danger', message: error.message });
+    setTimeout(() => setAlert(null), 5000);
+  }
+};
+
     if (loading && comandas.length === 0) {
         return <Cargador />;
     }
@@ -266,6 +311,7 @@ const Comandas = () => {
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 onGenerarFactura={handleGenerarFactura}
+                onVerFactura={handleVerFactura}
             />
 
             <Paginacion 

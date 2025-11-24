@@ -12,13 +12,11 @@ const ModalGenerarFactura = ({
   const [idClienteSeleccionado, setIdClienteSeleccionado] = useState('');
 
   useEffect(() => {
-    // Si la comanda ya tiene cliente, pre-seleccionarlo
-    if (comanda?.id_cliente) {
-      setIdClienteSeleccionado(comanda.id_cliente);
-    } else {
-      setIdClienteSeleccionado(''); // Reset cuando cambia la comanda
+ 
+    if (show) {
+      setIdClienteSeleccionado('');
     }
-  }, [comanda]);
+  }, [show, comanda]);
 
   if (!comanda) return null;
 
@@ -32,12 +30,20 @@ const ModalGenerarFactura = ({
   const total = calcularTotal();
 
   const handleConfirmar = () => {
-    // Pasar el id_cliente seleccionado a la función de confirmación
-    onConfirm(idClienteSeleccionado || null);
+    if (!idClienteSeleccionado) {
+      alert('Debe seleccionar un cliente para generar la factura');
+      return;
+    }
+    onConfirm(idClienteSeleccionado);
+  };
+
+  const handleCancelar = () => {
+    setIdClienteSeleccionado('');
+    onHide();
   };
 
   return (
-    <Modal show={show} onHide={onHide} size="lg">
+    <Modal show={show} onHide={handleCancelar} size="lg">
       <Modal.Header closeButton>
         <Modal.Title>🧾 Generar Factura</Modal.Title>
       </Modal.Header>
@@ -127,7 +133,7 @@ const ModalGenerarFactura = ({
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={onHide} disabled={loading}>
+        <Button variant="secondary" onClick={handleCancelar} disabled={loading}>
           Cancelar
         </Button>
         <Button 

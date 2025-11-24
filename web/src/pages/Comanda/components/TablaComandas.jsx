@@ -1,7 +1,7 @@
 import React from 'react';
 import { Table, Button, Badge } from 'react-bootstrap';
 
-const TablaComandas = ({ comandas, onEdit, onDelete, onGenerarFactura }) => {
+const TablaComandas = ({ comandas, onEdit, onDelete, onGenerarFactura, onVerFactura }) => {
   if (comandas.length === 0) {
     return (    
       <Table striped bordered hover responsive>
@@ -99,7 +99,16 @@ const TablaComandas = ({ comandas, onEdit, onDelete, onGenerarFactura }) => {
                     🧾 Facturar
                   </Button>
                 )}
-                
+                {comanda.estado === 'Cerrada' && ( 
+                  <Button
+                   variant="info"
+                  size="sm"
+                  onClick={() => onVerFactura(comanda)} // <-- Llama a la nueva función con el objeto comanda
+                  title="Ver Factura"
+                  >
+                  📄 Ver Factura
+                  </Button>
+                )}
                 <Button
                   variant="danger"
                   size="sm"

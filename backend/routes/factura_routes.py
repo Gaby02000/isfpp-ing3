@@ -14,13 +14,20 @@ def listar_facturas():
         page = request.args.get('page', default=1, type=int)
         per_page = request.args.get('per_page', default=10, type=int)
         
+        # ✅ AGREGAR: Parámetro de filtro por comanda
+        id_comanda = request.args.get('id_comanda', type=int)
+        
         # Validar parámetros
         if page < 1:
             page = 1
         if per_page < 1 or per_page > 100:
             per_page = 10
         
-        query = session.query(Factura).filter_by(baja=False).order_by(Factura.fecha.desc())
+        query = session.query(Factura).order_by(Factura.fecha.desc())
+        
+        # ✅ AGREGAR: Filtrar por id_comanda si se proporciona
+        if id_comanda:
+            query = query.filter_by(id_comanda=id_comanda)
         
         # Contar total
         total = query.count()
