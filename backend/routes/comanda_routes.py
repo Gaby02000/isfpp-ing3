@@ -135,16 +135,6 @@ def create_comanda():
         except (ValueError, TypeError):
             return jsonify({'status':'error', 'message': 'El id_mesa debe ser un número válido'}), 400
         
-        # ✅ CONVERTIR id_cliente a entero o None
-        id_cliente = data.get('id_cliente')
-        if id_cliente == '' or id_cliente is None:
-            id_cliente = None
-        else:
-            try:
-                id_cliente = int(id_cliente)
-            except (ValueError, TypeError):
-                return jsonify({'status':'error', 'message': 'El id_cliente debe ser un número válido'}), 400
-        
         # Ahora sí, validaciones con valores ya convertidos
         # Validar que el mozo existe y está activo
         mozo = session.query(Mozo).filter_by(id=id_mozo, baja=False).first()
@@ -168,18 +158,11 @@ def create_comanda():
                 'message': f'La mesa {id_mesa} ya tiene una comanda abierta (id_comanda: {comanda_abierta.id_comanda})'
             }), 400
         
-        # Validar cliente si se proporcionó
-        if id_cliente is not None:
-            cliente = session.query(Cliente).filter_by(id_cliente=id_cliente, baja=False).first()
-            if not cliente:
-                return jsonify({'status':'error', 'message': f'No existe un cliente activo con id_cliente {id_cliente}'}), 400
-        
-        # Crear comanda
+        # Crear comanda (el cliente se asocia únicamente a la factura)
         nueva_comanda = Comanda(
             fecha=data['fecha'],
             id_mozo=id_mozo,
             id_mesa=id_mesa,
-            id_cliente=id_cliente,
             estado='Abierta',
             observaciones=data.get('observaciones') or None
         )

@@ -56,6 +56,13 @@ const Gestion = () => {
       variant: 'light'
     },
     {
+      title: 'Pagos',
+      description: 'Registra y consulta los pagos realizados',
+      icon: '💰',
+      path: '/gestion/pagos',
+      variant: 'primary'
+    },
+    {
       title: 'Comandas',
       description: 'Gestiona las comandas del restaurante: Alta, Baja y Modificación',
       icon: '🧾' ,

@@ -17,6 +17,7 @@ class Factura(Base):
     cliente = relationship("Cliente", back_populates="factura")
     comanda = relationship("Comanda", back_populates="factura")
     detalles = relationship("DetalleFactura", back_populates="factura", cascade="all, delete-orphan")
+    pago = relationship("Pago", back_populates="factura")
     
     def __init__(self, codigo, fecha, total, id_cliente, id_comanda):
         self.codigo = codigo
