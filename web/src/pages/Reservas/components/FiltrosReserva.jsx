@@ -41,8 +41,8 @@ const FiltrosReserva = ({
               onChange={(e) => onFiltroChange('cancelado', e.target.value)}
             >
               <option value="">Todos</option>
-              <option value="activo">Activos</option>
-              <option value="cancelado">Estados</option>
+              <option value="activo">Activas</option>
+              <option value="cancelado">Canceladas</option>
             </Form.Select>
           </Form.Group>
         </Col>

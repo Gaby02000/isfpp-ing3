@@ -4,6 +4,19 @@ import { Modal, Button } from 'react-bootstrap';
 const ModalDetalleReserva = ({ show, onHide, reserva }) => {
   if (!reserva) return null;
 
+  const formatDisplayDate = (value) => {
+    if (!value) return '-';
+    let s = String(value).trim();
+    // eliminar fracciones de segundo si existen
+    s = s.replace(/\.\d+/, '');
+    let d = new Date(s);
+    if (isNaN(d.getTime()) && s.includes(' ')) {
+      d = new Date(s.replace(' ', 'T'));
+    }
+    if (isNaN(d.getTime())) return s;
+    return d.toLocaleString();
+  };
+
   return (
     <Modal show={show} onHide={onHide} size="lg">
       <Modal.Header closeButton>
@@ -19,8 +32,8 @@ const ModalDetalleReserva = ({ show, onHide, reserva }) => {
         <p><strong>Seña devuelta:</strong> {reserva.senia_devuelta ? 'Sí' : 'No'}</p>
         <p><strong>Seña recuperada:</strong> {reserva.senia_recuperada ? 'Sí' : 'No'}</p>
         <p><strong>Asistida:</strong> {reserva.asistida ? 'Sí' : 'No'}</p>
-        <p><strong>Creada:</strong> {reserva.fecha_creacion}</p>
-        <p><strong>Modificada:</strong> {reserva.fecha_modificacion}</p>
+        <p><strong>Creada:</strong> {formatDisplayDate(reserva.fecha_creacion)}</p>
+        <p><strong>Modificada:</strong> {formatDisplayDate(reserva.fecha_modificacion)}</p>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onHide}>Cerrar</Button>
