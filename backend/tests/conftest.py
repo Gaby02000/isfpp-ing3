@@ -8,7 +8,7 @@ from app import app, db
 from db import Base, engine, SessionLocal
 from models import (
     Cliente, Comanda, Mesa, Mozo, Producto, Seccion, 
-    Sector, MedioPago, Plato, Postre, Bebida, DetalleComanda
+    Sector, MedioPago, Plato, Postre, Bebida, DetalleComanda, Reserva
 )
 
 # Base de datos de test en memoria
@@ -48,6 +48,7 @@ def setup_test_db_for_routes(monkeypatch):
     import routes.seccion_routes as sr
     import routes.sector_routes as secr
     import routes.medio_pagos_routes as mpr
+    import routes.reserva_routes as resr
     
     monkeypatch.setattr(cr, 'SessionLocal', TestSessionLocal)
     monkeypatch.setattr(comr, 'SessionLocal', TestSessionLocal)
@@ -57,6 +58,7 @@ def setup_test_db_for_routes(monkeypatch):
     monkeypatch.setattr(sr, 'SessionLocal', TestSessionLocal)
     monkeypatch.setattr(secr, 'SessionLocal', TestSessionLocal)
     monkeypatch.setattr(mpr, 'SessionLocal', TestSessionLocal)
+    monkeypatch.setattr(resr, 'SessionLocal', TestSessionLocal)
 
 @pytest.fixture(scope='session')
 def test_app():

@@ -138,7 +138,7 @@ def crear_reserva():
         # Validación de disponibilidad de mesa
         reserva_existente = session.query(Reserva).filter_by(
             id_mesa=data['id_mesa'],
-            fecha_hora=data['fecha_hora'],
+            fecha_hora=fecha_reserva,  # Usar el datetime parseado
             cancelado=False
         ).first()
         if reserva_existente:
@@ -152,11 +152,11 @@ def crear_reserva():
         # Crear reserva
         nueva_reserva = Reserva(
             numero=data['numero'],
-            fecha_hora=data['fecha_hora'],
+            fecha_hora=fecha_reserva,  # Usar el datetime parseado
             cant_personas=data['cant_personas'],
             id_cliente=data['id_cliente'],
             id_mesa=data['id_mesa'],
-            cancelado=False   # 👈 boolean correcto
+            cancelado=False
         )
         session.add(nueva_reserva)
         session.commit()

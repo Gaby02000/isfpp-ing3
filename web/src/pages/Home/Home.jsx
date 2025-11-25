@@ -1,32 +1,74 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Row, Col, Button, Badge, Container } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
-import { useMozoService } from '../../services/mozoService';
+import { useReservaService } from '../../services/reservaService';
 import Cargador from '../../components/common/Cargador';
 
 const Home = () => {
   const navigate = useNavigate();
-  const { getMozos, loading } = useMozoService();
+  const { getReservas, loading } = useReservaService();
   const [stats, setStats] = useState({
-    totalMozos: 0,
+    reservasHoy: 0,
     loading: true
   });
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await getMozos();
-        const mozosData = response.data || response;  // extraer data si existe, sino usar response directo
+        // Obtener reservas del día de hoy en horario de Argentina (UTC-3)
+        // Función helper para obtener inicio y fin del día en horario argentino
+        const getFechasArgentina = () => {
+          const ahora = new Date();
+          
+          // Obtener fecha/hora actual en Argentina usando Intl.DateTimeFormat
+          const formatter = new Intl.DateTimeFormat('en-CA', {
+            timeZone: 'America/Argentina/Buenos_Aires',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+          });
+          
+          // Obtener partes de la fecha en Argentina
+          const partes = formatter.formatToParts(ahora);
+          const year = parseInt(partes.find(p => p.type === 'year').value);
+          const month = parseInt(partes.find(p => p.type === 'month').value) - 1; // Mes es 0-indexed
+          const day = parseInt(partes.find(p => p.type === 'day').value);
+          
+          // Crear fecha de inicio del día (00:00:00) en Argentina
+          // Argentina está en UTC-3, así que 00:00 ARG = 03:00 UTC
+          const inicioDia = new Date(Date.UTC(year, month, day, 3, 0, 0));
+          
+          // Crear fecha de fin del día (23:59:59) en Argentina
+          // 23:59:59 ARG = 02:59:59 UTC del día siguiente
+          const finDia = new Date(Date.UTC(year, month, day, 2, 59, 59));
+          finDia.setUTCDate(finDia.getUTCDate() + 1);
+          
+          return { inicioDia, finDia };
+        };
+        
+        const { inicioDia, finDia } = getFechasArgentina();
+        
+        // Convertir a ISO para enviar al backend
+        const fechaDesde = inicioDia.toISOString();
+        const fechaHasta = finDia.toISOString();
+        
+        const response = await getReservas({
+          cancelado: 'activo',
+          fecha_desde: fechaDesde,
+          fecha_hasta: fechaHasta
+        });
+        
+        const reservasData = response.data || [];
         setStats({
-          totalMozos: Array.isArray(mozosData) ? mozosData.length : 0,
+          reservasHoy: Array.isArray(reservasData) ? reservasData.length : 0,
           loading: false
         });
       } catch (error) {
-        setStats({ totalMozos: 0, loading: false });
+        setStats({ reservasHoy: 0, loading: false });
       }
     };
     fetchStats();
-  }, [getMozos]);
+  }, [getReservas]);
 
   const quickActions = [
     {
@@ -55,19 +97,20 @@ const Home = () => {
 
       <Row className="mb-4">
         <Col md={4}>
-          <Card className="shadow-sm border-0">
+          <Card className="shadow-sm border-0 border-start border-4 border-warning">
             <Card.Body>
               <div className="d-flex justify-content-between align-items-center">
                 <div>
-                  <h6 className="text-muted text-uppercase mb-2">Total Mozos</h6>
+                  <h6 className="text-muted text-uppercase mb-2">Reservas Hoy</h6>
                   {stats.loading ? (
                     <Cargador size="sm" />
                   ) : (
-                    <h2 className="mb-0">{stats.totalMozos}</h2>
+                    <h2 className="mb-0 text-warning">{stats.reservasHoy}</h2>
                   )}
+                  <small className="text-muted">Reservas activas para hoy</small>
                 </div>
-                <div className="text-primary" style={{ fontSize: '3rem' }}>
-                  👥
+                <div className="text-warning" style={{ fontSize: '3rem' }}>
+                  📅
                 </div>
               </div>
             </Card.Body>
