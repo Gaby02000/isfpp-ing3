@@ -15,6 +15,11 @@ class Cliente(Base):
 
     reservas = relationship("Reserva", back_populates="cliente")
     
+    # Relaciones
+    #comandas = relationship("Comanda", back_populates="cliente")
+    factura = relationship("Factura", back_populates="cliente")
+
+    
     def __init__(self, documento, nombre, apellido, num_telefono, email, baja=False):
         self.documento = documento
         self.nombre = nombre

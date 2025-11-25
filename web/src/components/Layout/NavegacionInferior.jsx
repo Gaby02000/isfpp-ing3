@@ -57,6 +57,11 @@ const NavegacionInferior = () => {
       path: '/gestion/reservas',
       icon: '📅',
       label: 'Reservas'
+    },
+    {
+      path: '/gestion/comandas',
+      icon: '🧾',
+      label: 'Comandas'
     }
   ];
 
@@ -132,4 +137,3 @@ const NavegacionInferior = () => {
 };
 
 export default NavegacionInferior;
-

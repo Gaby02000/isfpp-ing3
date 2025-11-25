@@ -15,6 +15,7 @@ class Mesa(Base):
     # Relaciones
     sector = relationship("Sector", back_populates="mesas")
     reservas = relationship("Reserva", back_populates="mesa")
+    comandas = relationship("Comanda", back_populates="mesa")
     
     def __init__(self, numero, tipo, cant_comensales, id_sector, baja=False):
         self.numero = numero
@@ -33,4 +34,3 @@ class Mesa(Base):
             'sector': self.sector.json() if self.sector else None,
             'baja': self.baja,
         }
-

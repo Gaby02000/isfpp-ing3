@@ -30,7 +30,7 @@ pnpm seed
 ```
 
 O directamente:
-```bash
+```bash 
 python3 -m seed.insert_seed
 ```
 

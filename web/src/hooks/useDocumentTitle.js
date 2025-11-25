@@ -11,7 +11,9 @@ const pageTitles = {
   '/gestion/secciones': 'Gestión de Secciones - UNPSJB',
   '/gestion/medio-pagos': 'Medios de Pago - UNPSJB',
   '/gestion/clientes': 'Gestión de Clientes - UNPSJB',
-  '/gestion/reservas': 'Gestión de Reservas - UNPSJB'   
+  '/gestion/reservas': 'Gestión de Reservas - UNPSJB',   
+  '/gestion/comandas': 'Gestión de Comandas - UNPSJB',
+  '/gestion/pagos': 'Gestión de Pagos - UNPSJB'
 };
 
 export const useDocumentTitle = () => {

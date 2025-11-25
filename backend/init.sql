@@ -127,6 +127,93 @@ CREATE TABLE IF NOT EXISTS reserva (
         ON DELETE RESTRICT
 );
 
+CREATE TABLE IF NOT EXISTS comanda (
+    id_comanda SERIAL PRIMARY KEY,
+    fecha VARCHAR(50) NOT NULL,
+    id_mozo INT NOT NULL,
+    id_mesa INT NOT NULL,
+    estado VARCHAR(20) NOT NULL DEFAULT 'Abierta',
+    observaciones TEXT,
+    fecha_cierre VARCHAR(50),
+    baja BOOLEAN DEFAULT FALSE,
+    CONSTRAINT fk_comanda_mozo FOREIGN KEY (id_mozo)
+        REFERENCES mozo(id)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+    CONSTRAINT fk_comanda_mesa FOREIGN KEY (id_mesa)
+        REFERENCES mesa(id_mesa)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+);
+
+CREATE TABLE IF NOT EXISTS factura (
+    id_factura SERIAL PRIMARY KEY, 
+    codigo VARCHAR(50) NOT NULL UNIQUE,
+    fecha VARCHAR(50) NOT NULL,
+    total DECIMAL(10,2) NOT NULL,
+    id_cliente INT NOT NULL,
+    id_comanda INT,
+    baja BOOLEAN DEFAULT FALSE,
+    CONSTRAINT fk_factura_cliente FOREIGN KEY (id_cliente)
+        REFERENCES cliente(id_cliente)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+    CONSTRAINT fk_factura_comanda FOREIGN KEY (id_comanda)
+        REFERENCES comanda(id_comanda)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+);
+
+CREATE TABLE IF NOT EXISTS detalle_comanda (
+    id_detalle_comanda SERIAL PRIMARY KEY,
+    id_comanda INT NOT NULL,
+    id_producto INT NOT NULL,
+    cantidad INT NOT NULL,
+    precio_unitario DECIMAL(10,2) NOT NULL,
+    entregado BOOLEAN DEFAULT FALSE,
+    CONSTRAINT fk_detalle_comanda FOREIGN KEY (id_comanda)
+        REFERENCES comanda(id_comanda)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT fk_detalle_producto FOREIGN KEY (id_producto)
+        REFERENCES producto(id_producto)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+);
+
+CREATE TABLE IF NOT EXISTS detalle_factura (
+    id_detalle_factura SERIAL PRIMARY KEY,
+    id_factura INT NOT NULL,
+    id_detalle_comanda INT,
+    cantidad INT NOT NULL,
+    precio_unitario DECIMAL(10,2) NOT NULL,
+    subtotal DECIMAL(10,2) NOT NULL,
+    CONSTRAINT fk_detalle_factura FOREIGN KEY (id_factura)
+        REFERENCES factura(id_factura)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT fk_detalle_factura_comanda FOREIGN KEY (id_detalle_comanda)
+        REFERENCES detalle_comanda(id_detalle_comanda)
+        ON UPDATE CASCADE
+        ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS pago (
+    id_pago SERIAL PRIMARY KEY,
+    id_factura INT NOT NULL,
+    id_medio_pago INT NOT NULL,
+    monto DECIMAL(10,2) NOT NULL,
+    fecha VARCHAR(50) NOT NULL,
+    CONSTRAINT fk_pago_factura FOREIGN KEY (id_factura)
+        REFERENCES factura(id_factura)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT fk_pago_medio FOREIGN KEY (id_medio_pago)
+        REFERENCES medio_pago(id_medio_pago)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT
+);
+
 -- Inserciones
 
 INSERT INTO cliente (documento, nombre, apellido, num_telefono, email, baja)
@@ -135,20 +222,22 @@ VALUES
 ('30222333', 'María', 'González', '2974123456', 'maria.gonzalez@example.com', FALSE),
 ('30333444', 'Carlos', 'Ramírez', '2974987654', 'carlos.ramirez@example.com', FALSE),
 ('30444555', 'Ana', 'López', '2974765432', 'ana.lopez@example.com', FALSE),
-('30555666', 'Pedro', 'Martínez', '2974234567', 'pedro.martinez@example.com', FALSE);
+('30555666', 'Pedro', 'Martínez', '2974234567', 'pedro.martinez@example.com', FALSE),
+('17555444', 'Marcelo', 'Santander', '2804000456', 'santander@gmail.com', FALSE);
 
 INSERT INTO seccion (nombre, baja) VALUES
-('xd', FALSE),
-('xd2', FALSE),
-('xd3', FALSE);
+('Entradas', FALSE),
+('Platos Principales', FALSE),
+('Postres', FALSE),
+('Bebidas', FALSE);
 
 INSERT INTO producto (codigo, nombre, precio, id_seccion, descripcion, baja) VALUES
-('PL001', 'Milanesa con papas', 1200.00, 1, 'Milanesa de ternera acompañada de papas fritas', FALSE),
+('PL001', 'Milanesa con papas', 1200.00, 2, 'Milanesa de ternera acompañada de papas fritas', FALSE),
 ('PL002', 'Ensalada César', 900.00, 1, 'Lechuga, pollo, queso y aderezo César', FALSE),
-('PO001', 'Flan casero', 450.00, 2, 'Flan con dulce de leche y crema', FALSE),
-('PO002', 'Helado de chocolate', 400.00, 2, 'Helado artesanal de chocolate', FALSE),
-('BE001', 'Coca-Cola 500ml', 250.00, 3, 'Bebida gaseosa de 500 cm3', FALSE),
-('BE002', 'Agua mineral 500ml', 150.00, 3, 'Agua mineral sin gas', FALSE);
+('PO001', 'Flan casero', 450.00, 3, 'Flan con dulce de leche y crema', FALSE),
+('PO002', 'Helado de chocolate', 400.00, 3, 'Helado artesanal de chocolate', FALSE),
+('BE001', 'Coca-Cola 500ml', 250.00, 4, 'Bebida gaseosa de 500 cm3', FALSE),
+('BE002', 'Agua mineral 500ml', 150.00, 4, 'Agua mineral sin gas', FALSE);
 
 INSERT INTO plato (id_plato) VALUES (1),(2);
 INSERT INTO postre (id_postre) VALUES (3),(4);
@@ -165,10 +254,6 @@ INSERT INTO sector (numero, baja) VALUES
 INSERT INTO mozo (documento, nombre_apellido, direccion, telefono, id_sector, baja) VALUES
 ('20123456', 'Juan Perez', 'Calle Falsa 123', '111222333', 1, FALSE),
 ('20333444', 'María Gómez', 'Avenida Siempre Viva 742', '222333444', 2, FALSE);
-
--- Inserts de ejemplo para CLIENTE (idempotente)
-INSERT INTO cliente (documento, nombre, apellido, num_telefono, email, baja) VALUES
-('17555444', 'Marcelo', 'Santander', '2804000456', 'santander@gmail.com', FALSE);
 
 -- Mesas del sector 1
 INSERT INTO mesa (numero, tipo, cant_comensales, id_sector, baja)
@@ -191,8 +276,14 @@ VALUES (5, 'VIP', 8, 3, FALSE);
 INSERT INTO mesa (numero, tipo, cant_comensales, id_sector, baja)
 VALUES (6, 'VIP', 10, 3, FALSE);
 
+-- Medios de Pago
+INSERT INTO medio_pago (nombre, descripcion, baja) VALUES
+('Efectivo', 'Pago en efectivo', FALSE),
+('Tarjeta de Crédito', 'Pago con tarjeta de crédito', FALSE),
+('Tarjeta de Débito', 'Pago con tarjeta de débito', FALSE),
+('Mercado Pago', 'Pago con QR o transferencia', FALSE);
 
--- Reserva en mesa 1 para cliente 1
+
 -- Reserva en mesa 1 para cliente 1
 INSERT INTO reserva (numero, fecha_hora, cant_personas, id_cliente, id_mesa, cancelado, fecha_creacion, fecha_modificacion, motivo_cancelacion, senia_devuelta, senia_recuperada, asistida)
 VALUES (1001, '2025-11-25 20:30:00', 4, 1, 1, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, FALSE, FALSE, FALSE);
@@ -208,4 +299,3 @@ VALUES (1003, '2025-11-27 19:00:00', 6, 3, 3, FALSE, CURRENT_TIMESTAMP, CURRENT_
 -- Reserva marcada como AUSENCIA (fecha pasada)
 INSERT INTO reserva (numero, fecha_hora, cant_personas, id_cliente, id_mesa, cancelado, fecha_creacion, fecha_modificacion, motivo_cancelacion, senia_devuelta, senia_recuperada, asistida)
 VALUES (1004, '2025-10-15 20:00:00', 4, 1, 1, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'ausencia', FALSE, TRUE, FALSE);
-
