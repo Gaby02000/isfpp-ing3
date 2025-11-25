@@ -97,6 +97,61 @@ def listar_reservas():
         session.close()
 
         
+@reserva_bp.route('/hoy', methods=['GET'])
+def listar_reservas_hoy():
+    """Lista las reservas activas de hoy en horario de Argentina"""
+    session = SessionLocal()
+    try:
+        from datetime import datetime, timedelta, timezone
+        try:
+            import pytz
+            tz_argentina = pytz.timezone('America/Argentina/Buenos_Aires')
+            utc = pytz.UTC
+        except ImportError:
+            try:
+                # Fallback a zoneinfo si pytz no está disponible
+                from zoneinfo import ZoneInfo
+                tz_argentina = ZoneInfo('America/Argentina/Buenos_Aires')
+            except ImportError:
+                # Fallback final: Offset fijo UTC-3
+                tz_argentina = timezone(timedelta(hours=-3))
+            utc = timezone.utc
+        
+        # Obtener fecha actual en Argentina
+        ahora_arg = datetime.now(tz_argentina)
+        
+        # Inicio del día en Argentina (00:00:00)
+        inicio_dia_arg = ahora_arg.replace(hour=0, minute=0, second=0, microsecond=0)
+        # Fin del día en Argentina (23:59:59)
+        fin_dia_arg = ahora_arg.replace(hour=23, minute=59, second=59, microsecond=999999)
+        
+        # Convertir a UTC para comparar con BD
+        inicio_dia_utc = inicio_dia_arg.astimezone(utc).replace(tzinfo=None)
+        fin_dia_utc = fin_dia_arg.astimezone(utc).replace(tzinfo=None)
+        
+        # Consultar reservas activas del día
+        reservas = session.query(Reserva).filter(
+            Reserva.cancelado == False,
+            Reserva.fecha_hora >= inicio_dia_utc,
+            Reserva.fecha_hora <= fin_dia_utc
+        ).all()
+        
+        data = []
+        for r in reservas:
+            item = r.json()
+            item['estado'] = 'activa'
+            data.append(item)
+        
+        return jsonify({
+            'status': 'success',
+            'data': data,
+            'total': len(data)
+        }), 200
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+    finally:
+        session.close()
+
 @reserva_bp.route('/', methods=['POST'])
 def crear_reserva():
     session = SessionLocal()

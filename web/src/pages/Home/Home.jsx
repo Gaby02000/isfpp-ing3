@@ -6,7 +6,7 @@ import Cargador from '../../components/common/Cargador';
 
 const Home = () => {
   const navigate = useNavigate();
-  const { getReservas, loading } = useReservaService();
+  const { getReservasHoy, loading } = useReservaService();
   const [stats, setStats] = useState({
     reservasHoy: 0,
     loading: true
@@ -15,48 +15,8 @@ const Home = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        // Obtener reservas del día de hoy en horario de Argentina (UTC-3)
-        // Función helper para obtener inicio y fin del día en horario argentino
-        const getFechasArgentina = () => {
-          const ahora = new Date();
-          
-          // Obtener fecha/hora actual en Argentina usando Intl.DateTimeFormat
-          const formatter = new Intl.DateTimeFormat('en-CA', {
-            timeZone: 'America/Argentina/Buenos_Aires',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit'
-          });
-          
-          // Obtener partes de la fecha en Argentina
-          const partes = formatter.formatToParts(ahora);
-          const year = parseInt(partes.find(p => p.type === 'year').value);
-          const month = parseInt(partes.find(p => p.type === 'month').value) - 1; // Mes es 0-indexed
-          const day = parseInt(partes.find(p => p.type === 'day').value);
-          
-          // Crear fecha de inicio del día (00:00:00) en Argentina
-          // Argentina está en UTC-3, así que 00:00 ARG = 03:00 UTC
-          const inicioDia = new Date(Date.UTC(year, month, day, 3, 0, 0));
-          
-          // Crear fecha de fin del día (23:59:59) en Argentina
-          // 23:59:59 ARG = 02:59:59 UTC del día siguiente
-          const finDia = new Date(Date.UTC(year, month, day, 2, 59, 59));
-          finDia.setUTCDate(finDia.getUTCDate() + 1);
-          
-          return { inicioDia, finDia };
-        };
-        
-        const { inicioDia, finDia } = getFechasArgentina();
-        
-        // Convertir a ISO para enviar al backend
-        const fechaDesde = inicioDia.toISOString();
-        const fechaHasta = finDia.toISOString();
-        
-        const response = await getReservas({
-          cancelado: 'activo',
-          fecha_desde: fechaDesde,
-          fecha_hasta: fechaHasta
-        });
+        // Obtener reservas del día de hoy usando el endpoint especializado
+        const response = await getReservasHoy();
         
         const reservasData = response.data || [];
         setStats({
@@ -68,7 +28,7 @@ const Home = () => {
       }
     };
     fetchStats();
-  }, [getReservas]);
+  }, [getReservasHoy]);
 
   const quickActions = [
     {

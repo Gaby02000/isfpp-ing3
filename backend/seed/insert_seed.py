@@ -13,7 +13,7 @@ sys.path.insert(0, backend_dir)
 from db import SessionLocal, engine, Base
 from models import (
     Seccion, Producto, Plato, Postre, Bebida,
-    Sector, Mesa, MedioPago, Cliente, Mozo, Comanda, DetalleComanda
+    Sector, Mesa, MedioPago, Cliente, Mozo, Comanda, DetalleComanda, Reserva
 )
 from models import Factura, DetalleFactura
 
@@ -28,6 +28,7 @@ from seed.mozo.seed_mozo import seed_mozos
 from seed.comanda.seed_comanda import seed_comandas
 from seed.factura.seed_factura import seed_facturas
 from seed.detalle_factura.seed_detalle_factura import seed_detalles_factura
+from seed.reserva.seed_reserva import seed_reservas
 
 
 def limpiar_datos(session):
@@ -38,6 +39,7 @@ def limpiar_datos(session):
         # Detalles y facturas
         session.query(DetalleFactura).delete()
         session.query(Factura).delete()
+        session.query(Reserva).delete()
         session.query(DetalleComanda).delete()
         session.query(Comanda).delete()
         session.query(Mesa).delete()
@@ -80,6 +82,7 @@ def main():
         mozos = seed_mozos(session, sectores)
         medios_pago = seed_medio_pago(session)
         clientes = seed_clientes(session)
+        reservas = seed_reservas(session, clientes, mesas)
         comandas = seed_comandas(session, mozos, mesas, productos)
 
         # Crear facturas y sus detalles (si hay productos y clientes)
@@ -96,6 +99,7 @@ def main():
         print(f"   - Mozos: {len(mozos)}")
         print(f"   - Medios de Pago: {len(medios_pago)}")
         print(f"   - Clientes: {len(clientes)}")
+        print(f"   - Reservas: {len(reservas)}")
         print(f"   - Comandas: {len(comandas)}")
         print(f"   - Facturas: {len(facturas)}")
         print(f"   - Detalles de factura: {len(detalles)}")

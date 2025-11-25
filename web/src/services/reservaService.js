@@ -102,6 +102,20 @@ export const useReservaService = () => {
     }
   }, []);
 
+  // Obtener reservas de hoy (endpoint específico)
+  const getReservasHoy = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${BACKEND_URL}/api/reservas/hoy`);
+      return response.data;
+    } catch (error) {
+      setError(error.response?.data?.message || 'Error al obtener reservas de hoy');
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return {
     getReservas,
     getReserva,
@@ -109,6 +123,7 @@ export const useReservaService = () => {
     updateReserva,
     cancelarReserva,
     deleteReserva,
+    getReservasHoy,
     error,
     loading
   };
