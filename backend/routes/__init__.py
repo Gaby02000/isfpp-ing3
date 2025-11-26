@@ -10,6 +10,7 @@ from .reserva_routes import reserva_bp
 from .comanda_routes import comanda_bp
 from .factura_routes import factura_bp
 from .pago_routes import pago_bp
+from .reporte_routes import reporte_bp
 
 api_bp = Blueprint('api', __name__)
 api_bp.register_blueprint(seccion_bp, url_prefix='/secciones')
@@ -23,3 +24,4 @@ api_bp.register_blueprint(reserva_bp, url_prefix='/reservas')
 api_bp.register_blueprint(comanda_bp, url_prefix='/comandas')
 api_bp.register_blueprint(factura_bp, url_prefix='/facturas')
 api_bp.register_blueprint(pago_bp, url_prefix='/pagos')
+api_bp.register_blueprint(reporte_bp,url_prefix='/reportes')

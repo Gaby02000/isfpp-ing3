@@ -13,6 +13,8 @@ import MedioPagos from './pages/MedioPagos/MedioPagos';
 import Reservas from './pages/Reservas/Reservas';
 import Comandas from './pages/Comanda/Comandas';
 import Pagos from './pages/Pagos/Pagos';
+import Reportes from './pages/Reportes/Reportes';
+
 import { useDocumentTitle } from './hooks/useDocumentTitle';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -34,6 +36,9 @@ function AppContent() {
         <Route path="/gestion/clientes" element={<Clientes />} />
         <Route path="/gestion/reservas" element={<Reservas />} />
         <Route path="/gestion/comandas" element={<Comandas />} />
+                <Route path="/gestion/reportes" element={<Reportes />} />
+
+        
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Plantilla>

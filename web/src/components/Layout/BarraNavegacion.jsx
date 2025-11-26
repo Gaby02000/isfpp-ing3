@@ -15,7 +15,8 @@ const BarraNavegacion = () => {
     '/gestion/secciones': 'Gestión de Secciones',
     '/gestion/medio-pagos': 'Medios de Pago',
     '/gestion/clientes': 'Gestión de Clientes',
-    '/gestion/reservas': 'Gestión de Reservas'
+    '/gestion/reservas': 'Gestión de Reservas',
+    '/gestion/reportes': 'Gestion de Reportes'
   };
 
   const getPageTitle = () => {

@@ -299,3 +299,47 @@ VALUES (1003, '2025-11-27 19:00:00', 6, 3, 3, FALSE, CURRENT_TIMESTAMP, CURRENT_
 -- Reserva marcada como AUSENCIA (fecha pasada)
 INSERT INTO reserva (numero, fecha_hora, cant_personas, id_cliente, id_mesa, cancelado, fecha_creacion, fecha_modificacion, motivo_cancelacion, senia_devuelta, senia_recuperada, asistida)
 VALUES (1004, '2025-10-15 20:00:00', 4, 1, 1, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'ausencia', FALSE, TRUE, FALSE);
+
+-- ======================================================
+-- COMANDAS
+-- ======================================================
+INSERT INTO comanda (fecha, id_mozo, id_mesa, estado, observaciones, fecha_cierre, baja)
+VALUES
+('2025-11-25 20:35:00', 1, 1, 'Cerrada', 'Comanda ejemplo 1', '2025-11-25 21:05:00', FALSE),
+('2025-11-26 21:05:00', 2, 2, 'Cerrada', 'Comanda ejemplo 2', '2025-11-26 21:35:00', FALSE);
+
+-- ======================================================
+-- DETALLES DE COMANDA
+-- ======================================================
+INSERT INTO detalle_comanda (id_comanda, id_producto, cantidad, precio_unitario, entregado)
+VALUES
+(1, 1, 2, 1200.00, TRUE),
+(1, 5, 2, 250.00, TRUE),
+(2, 2, 1, 900.00, TRUE),
+(2, 6, 2, 150.00, TRUE);
+
+-- ======================================================
+-- FACTURAS
+-- ======================================================
+INSERT INTO factura (codigo, fecha, total, id_cliente, id_comanda, baja)
+VALUES
+('F-1001-1', '2025-11-25 21:10:00', 2900.00, 1, 1, FALSE),
+('F-1002-2', '2025-11-26 21:40:00', 1200.00, 2, 2, FALSE);
+
+-- ======================================================
+-- DETALLES DE FACTURA
+-- ======================================================
+INSERT INTO detalle_factura (id_factura, id_detalle_comanda, cantidad, precio_unitario, subtotal)
+VALUES
+(1, 1, 2, 1200.00, 2400.00),
+(1, 2, 2, 250.00, 500.00),
+(2, 3, 1, 900.00, 900.00),
+(2, 4, 2, 150.00, 300.00);
+
+-- ======================================================
+-- PAGOS
+-- ======================================================
+INSERT INTO pago (id_factura, id_medio_pago, monto, fecha)
+VALUES
+(1, 1, 2900.00, '2025-11-25 21:15:00'),
+(2, 2, 1200.00, '2025-11-26 21:45:00');
