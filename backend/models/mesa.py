@@ -10,6 +10,7 @@ class Mesa(Base):
     tipo = Column(String(50), nullable=False)
     cant_comensales = Column(Integer, nullable=False)
     id_sector = Column(Integer, ForeignKey('sector.id_sector'), nullable=False)
+    estado = Column(String(20), default='disponible', nullable=False)  # 'disponible', 'ocupada', 'reservada'
     baja = Column(Boolean, default=False)
     
     # Relaciones
@@ -17,12 +18,13 @@ class Mesa(Base):
     reservas = relationship("Reserva", back_populates="mesa")
     comandas = relationship("Comanda", back_populates="mesa")
     
-    def __init__(self, numero, tipo, cant_comensales, id_sector, baja=False):
+    def __init__(self, numero, tipo, cant_comensales, id_sector, baja=False, estado='disponible'):
         self.numero = numero
         self.tipo = tipo
         self.cant_comensales = cant_comensales
         self.id_sector = id_sector
         self.baja = baja
+        self.estado = estado
 
     def json(self):
         return {
@@ -32,5 +34,7 @@ class Mesa(Base):
             'cant_comensales': self.cant_comensales,
             'id_sector': self.id_sector,
             'sector': self.sector.json() if self.sector else None,
+            'estado': self.estado,
             'baja': self.baja,
         }
+

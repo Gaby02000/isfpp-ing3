@@ -11,12 +11,10 @@ class DetalleComanda(Base):
     cantidad = Column(Integer, nullable=False)
     precio_unitario = Column(DECIMAL(10, 2), nullable=False)
     entregado = Column(Boolean, default=False)
-    id_detalle_reserva = Column(Integer, nullable=True)
     
     # Relaciones
     comanda = relationship("Comanda", back_populates="detalles")
     producto = relationship("Producto")
-    # detalle_reserva = relationship("DetalleReserva")  # Comentado hasta que exista el modelo DetalleReserva
 
     
     def json(self):
@@ -28,7 +26,7 @@ class DetalleComanda(Base):
             'cantidad': self.cantidad,
             'precio_unitario': float(self.precio_unitario),
             'entregado': self.entregado,
-            'id_detalle_reserva': self.id_detalle_reserva,
             'subtotal': float(self.precio_unitario * self.cantidad)
         }
+
 

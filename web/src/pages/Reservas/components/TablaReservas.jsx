@@ -1,7 +1,7 @@
 import React from 'react';
 import { Table, Button, Badge } from 'react-bootstrap';
 
-const TablaReservas = ({ reservas, clientes = [], mesas = [], onEdit, onCancel, onView }) => {
+const TablaReservas = ({ reservas, clientes = [], mesas = [], onEdit, onCancel, onView, onMarkAsistida, onCrearComanda }) => {
 
   const getClienteLabel = (id_cliente) => {
   const cliente = clientes.find(c => c.id_cliente === id_cliente);
@@ -78,6 +78,8 @@ const TablaReservas = ({ reservas, clientes = [], mesas = [], onEdit, onCancel, 
                 // Preferir estado derivado desde backend si viene
                 const estado = reserva.estado || (reserva.cancelado ? (reserva.motivo_cancelacion === 'ausencia' ? 'por ausencia' : 'cancelada') : 'activa');
                 if (estado === 'activa') return <Badge bg="success">Activa</Badge>;
+                if (estado === 'asistida') return <Badge bg="info">Asistida</Badge>;
+                if (estado === 'en_curso') return <Badge bg="warning">En Curso</Badge>;
                 if (estado === 'por ausencia') return <Badge bg="secondary">Por ausencia</Badge>;
                 return <Badge bg="danger">Cancelada</Badge>;
               })()}
@@ -93,6 +95,32 @@ const TablaReservas = ({ reservas, clientes = [], mesas = [], onEdit, onCancel, 
               >
                 Ver
               </Button>
+
+              {/* Botón Marcar como Asistida */}
+              {(reserva.estado === 'activa' || (!reserva.cancelado && !reserva.asistida)) && (
+                <Button
+                  variant="success"
+                  size="sm"
+                  className="me-2"
+                  onClick={() => onMarkAsistida && onMarkAsistida(reserva)}
+                  title="Marcar que el cliente llegó"
+                >
+                  ✓ Asistida
+                </Button>
+              )}
+
+              {/* Botón Crear Comanda */}
+              {(reserva.estado === 'asistida' || reserva.asistida) && (
+                <Button
+                  variant="primary"
+                  size="sm"
+                  className="me-2"
+                  onClick={() => onCrearComanda && onCrearComanda(reserva)}
+                  title="Crear comanda desde esta reserva"
+                >
+                  📋 Comanda
+                </Button>
+              )}
 
               <Button
                 variant="warning"

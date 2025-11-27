@@ -10,6 +10,7 @@ import TablaReservas from './components/TablaReservas';
 import ModalReservas from './components/ModalReservas';
 import ModalBajaReserva from './components/ModalBajaReserva';
 import ModalDetalleReserva from './components/ModalDetalleReserva';
+import ModalCrearComandaReserva from './components/ModalCrearComandaReserva';
 import Paginacion from '../../components/common/Paginacion';
 
 const Reservas = () => {
@@ -20,10 +21,14 @@ const Reservas = () => {
   const [reservas, setReservas] = useState([]);
   const [clientes, setClientes] = useState([]);
   const [mesas, setMesas] = useState([]);
+  const [mozos, setMozos] = useState([]);
+  const [productos, setProductos] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showCrearComandaModal, setShowCrearComandaModal] = useState(false);
   const [editingReserva, setEditingReserva] = useState(null);
   const [cancelingReserva, setCancelingReserva] = useState(null);
+  const [comandaReserva, setComandaReserva] = useState(null);
   const [detalleReserva, setDetalleReserva] = useState(null);
   const [showDetalleModal, setShowDetalleModal] = useState(false);
   const [alert, setAlert] = useState(null);
@@ -52,6 +57,8 @@ const Reservas = () => {
     loadReservas();
     loadClientes();
     loadMesas();
+    loadMozos();
+    loadProductos();
   }, []);
 
   useEffect(() => {
@@ -111,6 +118,26 @@ const Reservas = () => {
     }
   };
 
+  const loadMozos = async () => {
+    try {
+      const response = await fetch('http://localhost:8099/api/mozos/');
+      const data = await response.json();
+      setMozos(data.data || []);
+    } catch {
+      setMozos([]);
+    }
+  };
+
+  const loadProductos = async () => {
+    try {
+      const response = await fetch('http://localhost:8099/api/productos/');
+      const data = await response.json();
+      setProductos(data.data || []);
+    } catch {
+      setProductos([]);
+    }
+  };
+
   const reservasFiltradas = useMemo(() => {
     let filtered = [...reservas];
     if (busqueda) {
@@ -146,6 +173,62 @@ const Reservas = () => {
       setShowDetalleModal(true);
     } catch (error) {
       setAlert({ variant: 'danger', message: error.message });
+    }
+  };
+
+  const handleMarkAsistida = async (reserva) => {
+    try {
+      const response = await fetch(`http://localhost:8099/api/reservas/${reserva.id_reserva}/asistida`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({})
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al marcar como asistida');
+      }
+
+      setAlert({ variant: 'success', message: 'Reserva marcada como asistida. ¡Ahora puedes crear una comanda!' });
+      loadReservas();
+      setTimeout(() => setAlert(null), 3000);
+    } catch (error) {
+      setAlert({ variant: 'danger', message: error.message || 'Error al marcar la reserva como asistida' });
+    }
+  };
+
+  const handleCrearComanda = (reserva) => {
+    setComandaReserva(reserva);
+    setShowCrearComandaModal(true);
+  };
+
+  const handleConfirmCrearComanda = async (payload) => {
+    try {
+      const response = await fetch('http://localhost:8099/api/comandas/desde-reserva', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al crear comanda');
+      }
+
+      setAlert({ 
+        variant: 'success', 
+        message: 'Comanda creada exitosamente. La reserva pasa a "En Curso" y la mesa a "Ocupada"' 
+      });
+      setShowCrearComandaModal(false);
+      loadReservas();
+      setTimeout(() => setAlert(null), 4000);
+    } catch (error) {
+      setAlert({ variant: 'danger', message: error.message });
+      throw error;
     }
   };
 
@@ -252,6 +335,8 @@ const Reservas = () => {
         onEdit={handleEdit}
         onCancel={handleCancel}
         onView={handleView}
+        onMarkAsistida={handleMarkAsistida}
+        onCrearComanda={handleCrearComanda}
       />
 
       <Paginacion
@@ -282,6 +367,15 @@ const Reservas = () => {
         onHide={() => setShowCancelModal(false)}
         reserva={cancelingReserva}
         onConfirm={handleConfirmCancel}
+      />
+
+      <ModalCrearComandaReserva
+        show={showCrearComandaModal}
+        onHide={() => setShowCrearComandaModal(false)}
+        reserva={comandaReserva}
+        mozos={mozos}
+        productos={productos}
+        onConfirm={handleConfirmCrearComanda}
       />
     </Container>
   );

@@ -366,3 +366,40 @@ def ausencia_reserva(id):
         return jsonify({'status': 'error', 'message': f'Error al marcar ausencia: {str(e)}'}), 500
     finally:
         session.close()
+
+
+@reserva_bp.route('/<int:id>/asistida', methods=['PUT'])
+def marcar_reserva_asistida(id):
+    """Marcar una reserva como asistida (cambiar estado de 'activa' a 'asistida')"""
+    session = SessionLocal()
+    try:
+        reserva = session.query(Reserva).get(id)
+        if not reserva:
+            return jsonify({'status': 'error', 'message': 'Reserva no encontrada'}), 404
+
+        # Solo se puede marcar como asistida si está activa y no está cancelada
+        if reserva.cancelado:
+            return jsonify({'status': 'error', 'message': 'No se puede marcar como asistida una reserva cancelada'}), 400
+
+        if reserva.estado != 'activa':
+            return jsonify({
+                'status': 'error',
+                'message': f'La reserva debe estar en estado "activa". Estado actual: {reserva.estado}'
+            }), 400
+
+        # Marcar como asistida
+        reserva.asistida = True
+        reserva.estado = 'asistida'
+        reserva.fecha_modificacion = datetime.now()
+
+        session.commit()
+        return jsonify({
+            'status': 'success',
+            'message': 'Reserva marcada como asistida correctamente',
+            'data': reserva.json()
+        }), 200
+    except Exception as e:
+        session.rollback()
+        return jsonify({'status': 'error', 'message': f'Error al marcar reserva como asistida: {str(e)}'}), 500
+    finally:
+        session.close()

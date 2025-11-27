@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS mesa (
     tipo VARCHAR(50) NOT NULL,
     cant_comensales INT NOT NULL CHECK (cant_comensales > 0),
     id_sector INT NOT NULL,
+    estado VARCHAR(20) NOT NULL DEFAULT 'disponible',
     baja BOOLEAN DEFAULT FALSE,
     CONSTRAINT fk_mesa_sector FOREIGN KEY (id_sector)
         REFERENCES sector(id_sector)
@@ -114,6 +115,7 @@ CREATE TABLE IF NOT EXISTS reserva (
     senia_devuelta BOOLEAN DEFAULT FALSE,
     senia_recuperada BOOLEAN DEFAULT FALSE,
     asistida BOOLEAN DEFAULT FALSE,
+    estado VARCHAR(20) NOT NULL DEFAULT 'activa',
 
     -- Relaciones
     CONSTRAINT fk_reserva_cliente FOREIGN KEY (id_cliente)
@@ -132,6 +134,7 @@ CREATE TABLE IF NOT EXISTS comanda (
     fecha VARCHAR(50) NOT NULL,
     id_mozo INT NOT NULL,
     id_mesa INT NOT NULL,
+    id_reserva INT,
     estado VARCHAR(20) NOT NULL DEFAULT 'Abierta',
     observaciones TEXT,
     fecha_cierre VARCHAR(50),
@@ -143,7 +146,11 @@ CREATE TABLE IF NOT EXISTS comanda (
     CONSTRAINT fk_comanda_mesa FOREIGN KEY (id_mesa)
         REFERENCES mesa(id_mesa)
         ON UPDATE CASCADE
-        ON DELETE RESTRICT
+        ON DELETE RESTRICT,
+    CONSTRAINT fk_comanda_reserva FOREIGN KEY (id_reserva)
+        REFERENCES reserva(id_reserva)
+        ON UPDATE CASCADE
+        ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS factura (
@@ -285,20 +292,20 @@ INSERT INTO medio_pago (nombre, descripcion, baja) VALUES
 
 
 -- Reserva en mesa 1 para cliente 1
-INSERT INTO reserva (numero, fecha_hora, cant_personas, id_cliente, id_mesa, cancelado, fecha_creacion, fecha_modificacion, motivo_cancelacion, senia_devuelta, senia_recuperada, asistida)
-VALUES (1001, '2025-11-25 20:30:00', 4, 1, 1, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, FALSE, FALSE, FALSE);
+INSERT INTO reserva (numero, fecha_hora, cant_personas, id_cliente, id_mesa, cancelado, fecha_creacion, fecha_modificacion, motivo_cancelacion, senia_devuelta, senia_recuperada, asistida, estado)
+VALUES (1001, '2025-11-25 20:30:00', 4, 1, 1, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, FALSE, FALSE, FALSE, 'activa');
 
 -- Reserva en mesa 2 para cliente 2
-INSERT INTO reserva (numero, fecha_hora, cant_personas, id_cliente, id_mesa, cancelado, fecha_creacion, fecha_modificacion, motivo_cancelacion, senia_devuelta, senia_recuperada, asistida)
-VALUES (1002, '2025-11-26 21:00:00', 2, 2, 2, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, FALSE, FALSE, FALSE);
+INSERT INTO reserva (numero, fecha_hora, cant_personas, id_cliente, id_mesa, cancelado, fecha_creacion, fecha_modificacion, motivo_cancelacion, senia_devuelta, senia_recuperada, asistida, estado)
+VALUES (1002, '2025-11-26 21:00:00', 2, 2, 2, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, FALSE, FALSE, FALSE, 'activa');
 
 -- Reserva en mesa 3 para cliente 3
-INSERT INTO reserva (numero, fecha_hora, cant_personas, id_cliente, id_mesa, cancelado, fecha_creacion, fecha_modificacion, motivo_cancelacion, senia_devuelta, senia_recuperada, asistida)
-VALUES (1003, '2025-11-27 19:00:00', 6, 3, 3, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, FALSE, FALSE, FALSE);
+INSERT INTO reserva (numero, fecha_hora, cant_personas, id_cliente, id_mesa, cancelado, fecha_creacion, fecha_modificacion, motivo_cancelacion, senia_devuelta, senia_recuperada, asistida, estado)
+VALUES (1003, '2025-11-27 19:00:00', 6, 3, 3, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, FALSE, FALSE, FALSE, 'activa');
 
 -- Reserva marcada como AUSENCIA (fecha pasada)
-INSERT INTO reserva (numero, fecha_hora, cant_personas, id_cliente, id_mesa, cancelado, fecha_creacion, fecha_modificacion, motivo_cancelacion, senia_devuelta, senia_recuperada, asistida)
-VALUES (1004, '2025-10-15 20:00:00', 4, 1, 1, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'ausencia', FALSE, TRUE, FALSE);
+INSERT INTO reserva (numero, fecha_hora, cant_personas, id_cliente, id_mesa, cancelado, fecha_creacion, fecha_modificacion, motivo_cancelacion, senia_devuelta, senia_recuperada, asistida, estado)
+VALUES (1004, '2025-10-15 20:00:00', 4, 1, 1, TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'ausencia', FALSE, TRUE, FALSE, 'cancelada');
 
 -- ======================================================
 -- COMANDAS

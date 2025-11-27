@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from db import SessionLocal
 from models import Comanda, Mesa, Mozo, Producto, DetalleComanda
+from models.reserva import Reserva
 from datetime import datetime
 
 comanda_bp = Blueprint('comanda', __name__)
@@ -101,6 +102,152 @@ def listar_comandas_abiertas():
         }), 200
     except Exception as e:
         return jsonify({'status':'error', 'message': f'Error al listar comandas abiertas: {str(e)}'}), 500
+    finally:
+        session.close()
+
+@comanda_bp.route('/desde-reserva', methods=['POST'])
+def crear_comanda_desde_reserva():
+    """Crear una comanda asociada a una reserva existente"""
+    session = SessionLocal()
+    try:
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({'status': 'error', 'message': 'No se proporcionaron datos'}), 400
+        
+        # Validar campos obligatorios
+        if 'id_reserva' not in data or data['id_reserva'] is None:
+            return jsonify({'status': 'error', 'message': 'El campo "id_reserva" es requerido'}), 400
+        
+        if 'id_mozo' not in data or data['id_mozo'] is None:
+            return jsonify({'status': 'error', 'message': 'El campo "id_mozo" es requerido'}), 400
+        
+        # Convertir IDs a enteros
+        try:
+            id_reserva = int(data['id_reserva'])
+            id_mozo = int(data['id_mozo'])
+        except (ValueError, TypeError):
+            return jsonify({'status': 'error', 'message': 'Los IDs deben ser números válidos'}), 400
+        
+        # 1. Validar que la reserva existe
+        reserva = session.query(Reserva).get(id_reserva)
+        if not reserva:
+            return jsonify({'status': 'error', 'message': f'No existe una reserva con id_reserva {id_reserva}'}), 404
+        
+        # 2. Validar que la reserva está en estado "asistida" (cliente llegó)
+        if reserva.cancelado:
+            return jsonify({
+                'status': 'error',
+                'message': 'No se puede crear comanda para una reserva cancelada'
+            }), 400
+        
+        if reserva.estado not in ['activa', 'asistida']:
+            return jsonify({
+                'status': 'error',
+                'message': f'La reserva debe estar en estado "activa" o "asistida". Estado actual: {reserva.estado}'
+            }), 400
+        
+        # 3. Validar que no existe ya una comanda en curso para esta reserva
+        comanda_existente = session.query(Comanda).filter_by(
+            id_reserva=id_reserva,
+            baja=False
+        ).first()
+        if comanda_existente:
+            return jsonify({
+                'status': 'error',
+                'message': f'Ya existe una comanda asociada a esta reserva (id_comanda: {comanda_existente.id_comanda})'
+            }), 400
+        
+        # 4. Validar que el mozo existe y está activo
+        mozo = session.query(Mozo).filter_by(id=id_mozo, baja=False).first()
+        if not mozo:
+            return jsonify({'status': 'error', 'message': f'No existe un mozo activo con id {id_mozo}'}), 400
+        
+        # 5. Obtener la mesa de la reserva
+        mesa = reserva.mesa
+        if not mesa:
+            return jsonify({'status': 'error', 'message': 'La mesa asociada a la reserva no existe'}), 404
+        
+        if mesa.baja:
+            return jsonify({'status': 'error', 'message': 'La mesa de la reserva está dada de baja'}), 400
+        
+        # 6. Validar que la mesa y el cliente coincidan con los datos de la reserva
+        # (La mesa ya coincide porque la obtuvimos de la reserva)
+        
+        # 7. Validar que no existe otra comanda abierta en esa mesa
+        comanda_abierta_mesa = session.query(Comanda).filter_by(
+            id_mesa=mesa.id_mesa,
+            estado='Abierta',
+            baja=False
+        ).first()
+        if comanda_abierta_mesa:
+            return jsonify({
+                'status': 'error',
+                'message': f'La mesa {mesa.numero} ya tiene una comanda abierta (id_comanda: {comanda_abierta_mesa.id_comanda})'
+            }), 400
+        
+        # 8. Crear la comanda con la información de la reserva
+        fecha_actual = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        nueva_comanda = Comanda(
+            fecha=fecha_actual,
+            id_mozo=id_mozo,
+            id_mesa=mesa.id_mesa,
+            id_reserva=id_reserva,
+            estado='Abierta',
+            observaciones=data.get('observaciones') or None
+        )
+        session.add(nueva_comanda)
+        session.flush()  # Para obtener el id_comanda
+        
+        # 9. Agregar productos si se proporcionan
+        productos = data.get('productos', [])
+        if productos:
+            for producto_data in productos:
+                id_producto = producto_data.get('id_producto')
+                cantidad = producto_data.get('cantidad', 1)
+                
+                try:
+                    id_producto = int(id_producto)
+                    cantidad = int(cantidad)
+                except (ValueError, TypeError):
+                    continue
+                
+                if not id_producto or cantidad <= 0:
+                    continue
+                
+                # Validar que el producto existe y está activo
+                producto = session.query(Producto).filter_by(id_producto=id_producto, baja=False).first()
+                if not producto:
+                    continue
+                
+                # Crear detalle de comanda
+                detalle = DetalleComanda(
+                    id_comanda=nueva_comanda.id_comanda,
+                    id_producto=id_producto,
+                    cantidad=cantidad,
+                    precio_unitario=producto.precio,
+                    entregado=False
+                )
+                session.add(detalle)
+        
+        # 10. Actualizar estado de la reserva a "en_curso"
+        reserva.estado = 'en_curso'
+        reserva.fecha_modificacion = datetime.now()
+        
+        # 11. Actualizar estado de la mesa a "ocupada"
+        mesa.estado = 'ocupada'
+        
+        session.commit()
+        
+        return jsonify({
+            'status': 'success',
+            'message': 'Comanda creada exitosamente desde la reserva',
+            'data': nueva_comanda.json()
+        }), 201
+    
+    except Exception as e:
+        session.rollback()
+        return jsonify({'status': 'error', 'message': f'Error al crear comanda desde reserva: {str(e)}'}), 500
     finally:
         session.close()
 

@@ -18,7 +18,8 @@ class Reserva(Base):
     motivo_cancelacion = Column(String(255), nullable=True)
     senia_devuelta = Column(Boolean, default=False)
     senia_recuperada = Column(Boolean, default=False)
-    asistida = Column(Boolean, default=False)
+    estado = Column(String(20), default='activa', nullable=False)  # 'activa', 'asistida', 'en_curso', 'completada', 'cancelada'
+    asistida = Column(Boolean, default=False)  # Mantener por retrocompatibilidad, deprecado
 
     #Relaciones
 
@@ -27,7 +28,7 @@ class Reserva(Base):
 
     def __init__(self, numero, fecha_hora, cant_personas, id_cliente, id_mesa,
                  cancelado=False, motivo_cancelacion=None, senia_devuelta=False,
-                 senia_recuperada=False, asistida=False):
+                 senia_recuperada=False, asistida=False, estado='activa'):
         self.numero = numero
         self.fecha_hora = fecha_hora
         self.cant_personas = cant_personas
@@ -38,6 +39,7 @@ class Reserva(Base):
         self.senia_devuelta = senia_devuelta
         self.senia_recuperada = senia_recuperada
         self.asistida = asistida
+        self.estado = estado
 
     def json(self):
         return {
@@ -55,5 +57,6 @@ class Reserva(Base):
             'motivo_cancelacion': self.motivo_cancelacion,
             'senia_devuelta': self.senia_devuelta,
             'senia_recuperada': self.senia_recuperada,
-            'asistida': self.asistida
+            'asistida': self.asistida,
+            'estado': self.estado
         }
