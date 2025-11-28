@@ -8,9 +8,67 @@ pago_bp = Blueprint('pago', __name__)
 def listar_pagos():
     session = SessionLocal()
     try:
-        pagos = session.query(Pago).all()
+        # Parámetros de paginación
+        page = request.args.get('page', default=1, type=int)
+        per_page = request.args.get('per_page', default=10, type=int)
+        
+        # Filtros
+        id_medio_pago = request.args.get('id_medio_pago', type=int)
+        fecha_desde = request.args.get('fecha_desde')
+        fecha_hasta = request.args.get('fecha_hasta')
+        search = request.args.get('search')
+
+        # Validar parámetros
+        if page < 1:
+            page = 1
+        if per_page < 1 or per_page > 100:
+            per_page = 10
+            
+        query = session.query(Pago).join(Factura).order_by(Pago.fecha.desc())
+        
+        if id_medio_pago:
+            query = query.filter(Pago.id_medio_pago == id_medio_pago)
+            
+        if fecha_desde:
+            query = query.filter(Pago.fecha >= fecha_desde)
+            
+        if fecha_hasta:
+            # Asumiendo que fecha es string YYYY-MM-DD HH:MM:SS, si fecha_hasta es YYYY-MM-DD, agregamos hora final
+            if len(fecha_hasta) == 10:
+                fecha_hasta += ' 23:59:59'
+            query = query.filter(Pago.fecha <= fecha_hasta)
+            
+        if search:
+            search = f"%{search}%"
+            # Buscar por código de factura o ID de pago
+            query = query.filter(
+                (Factura.codigo.ilike(search)) | 
+                (Pago.id_pago.cast(str).ilike(search))
+            )
+        
+        # Contar total
+        total = query.count()
+        
+        # Aplicar paginación
+        offset = (page - 1) * per_page
+        pagos = query.offset(offset).limit(per_page).all()
         data = [p.json() for p in pagos]
-        return jsonify({'status':'success','data':data}), 200
+        
+        # Calcular total de páginas
+        total_pages = (total + per_page - 1) // per_page if total > 0 else 1
+        
+        return jsonify({
+            'status': 'success',
+            'data': data,
+            'pagination': {
+                'page': page,
+                'per_page': per_page,
+                'total': total,
+                'total_pages': total_pages,
+                'has_next': page < total_pages,
+                'has_prev': page > 1
+            }
+        }), 200
     except Exception as e:
         return jsonify({'status':'error','message':f'Error al listar pagos: {str(e)}'}), 500
     finally:

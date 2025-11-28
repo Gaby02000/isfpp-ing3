@@ -17,6 +17,7 @@ export const useFacturaService = () => {
     if (filters.page) params.append('page', filters.page);
     if (filters.per_page) params.append('per_page', filters.per_page);
     if (filters.id_comanda) params.append('id_comanda', filters.id_comanda);
+    if (filters.solo_impagas) params.append('solo_impagas', 'true');
     
     const url = `${BACKEND_URL}/api/facturas/?${params.toString()}`;
     console.log('🔷 [getFacturas] URL:', url);

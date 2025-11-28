@@ -10,12 +10,17 @@ def listar_facturas():
     """Lista todas las facturas con paginación"""
     session = SessionLocal()
     try:
+        from sqlalchemy import func
+        from models import Pago
+        
         # Parámetros de paginación
         page = request.args.get('page', default=1, type=int)
         per_page = request.args.get('per_page', default=10, type=int)
         
-        # ✅ AGREGAR: Parámetro de filtro por comanda
+        # Filtros
         id_comanda = request.args.get('id_comanda', type=int)
+        solo_impagas = request.args.get('solo_impagas', type=str)
+        solo_impagas = solo_impagas and solo_impagas.lower() in ('true', '1', 'yes')
         
         # Validar parámetros
         if page < 1:
@@ -23,11 +28,27 @@ def listar_facturas():
         if per_page < 1 or per_page > 100:
             per_page = 10
         
-        query = session.query(Factura).order_by(Factura.fecha.desc())
+        query = session.query(Factura).filter_by(baja=False).order_by(Factura.fecha.desc())
         
-        # ✅ AGREGAR: Filtrar por id_comanda si se proporciona
+        # Filtrar por id_comanda si se proporciona
         if id_comanda:
             query = query.filter_by(id_comanda=id_comanda)
+        
+        # Filtrar solo facturas impagas
+        if solo_impagas:
+            # Subquery para calcular el total pagado por factura
+            total_pagado_subq = session.query(
+                Pago.id_factura,
+                func.sum(Pago.monto).label('total_pagado')
+            ).group_by(Pago.id_factura).subquery()
+            
+            # Query principal con LEFT JOIN para incluir facturas sin pagos
+            query = query.outerjoin(
+                total_pagado_subq,
+                Factura.id_factura == total_pagado_subq.c.id_factura
+            ).filter(
+                (func.coalesce(total_pagado_subq.c.total_pagado, 0) < Factura.total)
+            )
         
         # Contar total
         total = query.count()

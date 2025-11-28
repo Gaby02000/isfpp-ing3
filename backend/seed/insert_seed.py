@@ -15,7 +15,7 @@ from models import (
     Seccion, Producto, Plato, Postre, Bebida,
     Sector, Mesa, MedioPago, Cliente, Mozo, Comanda, DetalleComanda, Reserva
 )
-from models import Factura, DetalleFactura
+from models import Factura, DetalleFactura, Pago
 
 # Importar seeders
 from seed.sector.seed_sector import seed_sectores
@@ -28,6 +28,7 @@ from seed.mozo.seed_mozo import seed_mozos
 from seed.comanda.seed_comanda import seed_comandas
 from seed.factura.seed_factura import seed_facturas
 from seed.detalle_factura.seed_detalle_factura import seed_detalles_factura
+from seed.pago.seed_pago import seed_pagos
 from seed.reserva.seed_reserva import seed_reservas
 
 
@@ -37,6 +38,7 @@ def limpiar_datos(session):
     try:
         # Limpiar en orden de dependencias (primero las tablas dependientes)
         # Detalles y facturas
+        session.query(Pago).delete()
         session.query(DetalleFactura).delete()
         session.query(Factura).delete()
         session.query(Reserva).delete()
@@ -88,6 +90,9 @@ def main():
         # Crear facturas y sus detalles (si hay productos y clientes)
         facturas = seed_facturas(session, clientes, comandas)
         detalles = seed_detalles_factura(session, facturas, productos)
+        
+        # Crear pagos
+        pagos = seed_pagos(session, facturas, medios_pago)
 
         print("=" * 50)
         print("✅ ¡Carga de datos completada exitosamente!")
@@ -103,6 +108,7 @@ def main():
         print(f"   - Comandas: {len(comandas)}")
         print(f"   - Facturas: {len(facturas)}")
         print(f"   - Detalles de factura: {len(detalles)}")
+        print(f"   - Pagos: {len(pagos)}")
 
     except Exception as e:
         session.rollback()

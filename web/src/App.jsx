@@ -32,7 +32,7 @@ function AppContent() {
         <Route path="/gestion/productos" element={<Productos />} />
         <Route path="/gestion/secciones" element={<Secciones/>} />
         <Route path="/gestion/medio-pagos" element={<MedioPagos />} />
-        <Route path="/gestion/pagos" element={<Pagos />} />
+        <Route path="/pagos" element={<Pagos />} />
         <Route path="/gestion/clientes" element={<Clientes />} />
         <Route path="/gestion/reservas" element={<Reservas />} />
         <Route path="/gestion/comandas" element={<Comandas />} />

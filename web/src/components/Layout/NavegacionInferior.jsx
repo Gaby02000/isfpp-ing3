@@ -46,6 +46,11 @@ const NavegacionInferior = () => {
     {
       path: '/gestion/medio-pagos',
       icon: '💳',
+      label: 'Medios de Pago'
+    },
+    {
+      path: '/pagos',
+      icon: '💰',
       label: 'Pagos'
     },
     {

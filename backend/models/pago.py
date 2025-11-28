@@ -14,7 +14,7 @@ class Pago(Base):
 
     
     # Relaciones
-    factura = relationship("Factura", back_populates="pago")
+    factura = relationship("Factura", back_populates="pagos")
     medio_pago = relationship("MedioPago", back_populates="pagos")
 
     def __init__(self, id_factura, id_medio_pago, monto, fecha):
@@ -27,8 +27,10 @@ class Pago(Base):
         return {
             'id_pago': self.id_pago,
             'id_factura': self.id_factura,
+            'factura_codigo': self.factura.codigo if self.factura else None,
             'id_medio_pago': self.id_medio_pago,
-            'monto': self.monto,
+            'medio_pago_nombre': self.medio_pago.nombre if self.medio_pago else None,
+            'monto': float(self.monto),
             'fecha': self.fecha,
         }
 
