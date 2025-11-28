@@ -11,6 +11,7 @@ const ModalProducto = ({
   onSubmit,
   secciones
 }) => {
+
   return (
     <Modal show={show} onHide={onHide} size="lg">
       <Formik
@@ -20,8 +21,13 @@ const ModalProducto = ({
           precio: editingProducto?.precio || '',
           descripcion: editingProducto?.descripcion || '',
           id_seccion: editingProducto?.id_seccion || '',
+          tipo: editingProducto?.tipo || '',
+
+          cm3: editingProducto?.cm3 || ''
         }}
+
         validationSchema={productoValidationSchema}
+
         onSubmit={(values, actions) => {
           console.log("Formik onSubmit ejecutado", values);
           onSubmit(values, actions);
@@ -50,6 +56,7 @@ const ModalProducto = ({
                     placeholder="Ej: P-001"
                   />
                 </Col>
+
                 <Col md={6}>
                   <CampoFormulario
                     label="Nombre"
@@ -83,6 +90,7 @@ const ModalProducto = ({
                 </Col>
 
                 <Col md={6}>
+                  {/* Selección de sección */}
                   <Form.Group className="mb-3">
                     <Form.Label>Sección</Form.Label>
                     <Form.Select
@@ -107,8 +115,50 @@ const ModalProducto = ({
                       </Form.Control.Feedback>
                     )}
                   </Form.Group>
+
+                  {/* Tipo de producto */}
+                  <Form.Group className="mb-3">
+                    <Form.Label>Tipo de Producto</Form.Label>
+                    <Form.Select
+                      name="tipo"
+                      value={values.tipo}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      isInvalid={touched.tipo && errors.tipo}
+                    >
+                      <option value="">Seleccione un tipo</option>
+                      <option value="plato">Plato</option>
+                      <option value="postre">Postre</option>
+                      <option value="bebida">Bebida</option>
+                    </Form.Select>
+
+                    {touched.tipo && errors.tipo && (
+                      <Form.Control.Feedback type="invalid">
+                        {errors.tipo}
+                      </Form.Control.Feedback>
+                    )}
+                  </Form.Group>
                 </Col>
               </Row>
+
+              {values.tipo === "bebida" && (
+                <Row>
+                  <Col md={6}>
+                    <CampoFormulario
+                      label="Cantidad (cm3)"
+                      name="cm3"
+                      type="number"
+                      min="1"
+                      value={values.cm3}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      touched={touched.cm3}
+                      error={errors.cm3}
+                      placeholder="Ej: 500"
+                    />
+                  </Col>
+                </Row>
+              )}
 
               <Row>
                 <Col>

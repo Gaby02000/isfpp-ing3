@@ -38,7 +38,6 @@ const Productos = () => {
     precio_max: ''
   });
 
-
   const [busqueda, setBusqueda] = useState('');
 
   useEffect(() => {
@@ -52,7 +51,7 @@ const Productos = () => {
 
   const loadProductos = async (page = pagination.page) => {
     try {
-     const filters = {
+      const filters = {
         page,
         per_page: pagination.per_page,
         activos: filtros.activos || undefined,
@@ -60,7 +59,6 @@ const Productos = () => {
         precio_min: filtros.precio_min || undefined,
         precio_max: filtros.precio_max || undefined
       };
-
 
       const response = await getProductos(filters);
       let productosData = response.data || [];
@@ -121,13 +119,20 @@ const Productos = () => {
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
+      // payload general
       const payload = {
         codigo: values.codigo,
         nombre: values.nombre,
         descripcion: values.descripcion,
         precio: values.precio,
-        id_seccion: values.id_seccion || null
+        id_seccion: values.id_seccion || null,
+        tipo: values.tipo
       };
+
+      // si es bebida agregar cm3
+      if (values.tipo === 'bebida') {
+        payload.cm3 = Number(values.cm3);
+      }
 
       if (editingProducto) {
         await updateProducto(editingProducto.id_producto, payload);
@@ -176,7 +181,6 @@ const Productos = () => {
     setBusqueda('');
     setPagination(prev => ({ ...prev, page: 1 }));
   };
-
 
   const handlePageChange = (page) => {
     setPagination(prev => ({ ...prev, page }));

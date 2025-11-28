@@ -78,23 +78,44 @@ export const clienteValidationSchema = Yup.object({
     .required('El email es obligatorio')
     .max(100, 'Máximo 100 caracteres'), // Límite de tu modelo
 });
+
 export const productoValidationSchema = Yup.object({
   nombre: Yup.string()
-    .required('El nombre es obligatorio')
-    .max(255, 'Máximo 255 caracteres'),
+    .required("El nombre es obligatorio")
+    .max(255, "Máximo 255 caracteres"),
+
   codigo: Yup.string()
-    .required('El código es obligatorio')
-    .max(50, 'Máximo 50 caracteres'),
+    .required("El código es obligatorio")
+    .max(50, "Máximo 50 caracteres"),
+
   precio: Yup.number()
-    .typeError('El precio debe ser un número')
-    .positive('Debe ser mayor a 0')
-    .required('El precio es obligatorio'),
+    .typeError("El precio debe ser un número")
+    .positive("Debe ser mayor a 0")
+    .required("El precio es obligatorio"),
+
   id_seccion: Yup.number()
-    .typeError('Debe seleccionar una sección')
-    .required('Debe seleccionar una sección'),
+    .typeError("Debe seleccionar una sección")
+    .required("Debe seleccionar una sección"),
+
   descripcion: Yup.string()
-    .max(500, 'Máximo 500 caracteres')
+    .max(500, "Máximo 500 caracteres")
     .nullable(),
+
+  tipo: Yup.string()
+    .oneOf(["plato", "postre", "bebida"], "Tipo inválido")
+    .required("Debe seleccionar un tipo"),
+
+  cm3: Yup.number()
+    .when("tipo", {
+      is: "bebida",
+      then: (schema) =>
+        schema
+          .typeError("Debe ser un número")
+          .integer("Debe ser un número entero")
+          .positive("Debe ser mayor a 0")
+          .required("Debe ingresar los cm3 de la bebida"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
 });
 
 export const seccionValidationSchema = Yup.object({

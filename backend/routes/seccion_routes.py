@@ -126,3 +126,25 @@ def eliminar_seccion(id):
         'message': 'Sección dada de baja correctamente',
         'data': res
     }), 200
+
+
+@seccion_bp.route('/<int:id>', methods=['PUT'])
+def actualizar_seccion(id):
+    session = SessionLocal()
+    data = request.get_json()
+
+    seccion = session.query(Seccion).get(id)
+    if not seccion:
+        session.close()
+        return jsonify({'status': 'error', 'message': 'Sección no encontrada'}), 404
+
+    seccion.nombre = data.get('nombre', seccion.nombre)
+    session.commit()
+    res = seccion.json()
+    session.close()
+
+    return jsonify({
+        'status': 'success',
+        'message': 'Sección actualizada correctamente',
+        'data': res
+    }), 200

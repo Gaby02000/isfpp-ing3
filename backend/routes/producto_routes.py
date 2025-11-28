@@ -95,7 +95,6 @@ def listar_productos():
 
 @producto_bp.route('/', methods=['POST'])
 def crear_producto():
-    
     session = SessionLocal()
     data = request.get_json()
 
@@ -122,21 +121,28 @@ def crear_producto():
             'status': 'error',
             'message': 'El código de producto ya existe'
         }), 200
-    
+
+    # 👉 Primero creamos el producto general
+    producto = Producto(
+        codigo=data['codigo'],
+        nombre=data['nombre'],
+        precio=data['precio'],
+        id_seccion=data['id_seccion'],
+        descripcion=data.get('descripcion', None),
+        baja=False
+    )
+    session.add(producto)
+    session.flush()  # Necesario para obtener producto.id_producto
+
+    # 👉 Luego creamos el tipo específico
     if data['tipo'] == 'plato':
-        nuevo = Plato(
-            id_plato=data['id_plato'],
-            producto=nuevo
-        )
+        tipo = Plato(id_plato=producto.id_producto)
     elif data['tipo'] == 'postre':
-        nuevo = Postre(
-            id_postre=data['id_postre'],
-            producto=nuevo
-        )
+        tipo = Postre(id_postre=producto.id_producto)
     elif data['tipo'] == 'bebida':
-        nuevo = Bebida(
-            id_bebida=data['id_bebida'],
-            producto=nuevo
+        tipo = Bebida(
+            id_bebida=producto.id_producto,
+            cm3=data.get('cm3', None)  # opcional
         )
     else:
         session.close()
@@ -145,17 +151,10 @@ def crear_producto():
             'message': 'El tipo de producto no es válido'
         }), 200
 
-    nuevo = Producto(
-        codigo=data['codigo'],
-        nombre=data['nombre'],
-        precio=data['precio'],
-        id_seccion=data['id_seccion'],
-        descripcion=data.get('descripcion', None),
-        baja=False
-    )
-    session.add(nuevo)
+    session.add(tipo)
     session.commit()
-    res = nuevo.json()
+
+    res = producto.json()
     session.close()
 
     return jsonify({
@@ -163,6 +162,7 @@ def crear_producto():
         'message': 'Producto creado correctamente',
         'data': res
     }), 200
+
 
 
 @producto_bp.route('/<int:id>', methods=['GET'])
