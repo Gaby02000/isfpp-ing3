@@ -1,0 +1,53 @@
+========================================
+   REPORTE DE MÉTRICAS DEL PROYECTO
+========================================
+
+🐍 BACKEND (Python)
+--------------------
+LOC            : 8955
+LLOC           : 5539
+SLOC           : 6572
+Comments       : 613
+Single comments: 852
+Multi          : 95
+Blank          : 1436
+
+⚛️ FRONTEND (React/JS)
+--------------------
+Physical       : 8931
+Source         : 8038
+Comment        : 201
+Empty          : 799
+To Do          : 0
+
+📊 TOTALES COMBINADOS
+--------------------
+Líneas Totales      : 17886
+Código Real         : 14610
+Comentarios         : 814
+Vacías              : 2235
+
+
+========================================
+GLOSARIO DE TÉRMINOS
+========================================
+
+1. LOC / Physical (Líneas Físicas):
+   Cuenta cada salto de línea en el archivo. Es el tamaño 'bruto' del archivo.
+
+2. SLOC / Source (Líneas de Código Fuente):
+   Líneas que contienen instrucciones ejecutables. Excluye comentarios y espacios.
+   Esta es la métrica más real de 'cuánto trabajo de programación' hubo.
+
+3. Comments (Comentarios):
+   Líneas dedicadas a documentación o explicaciones.
+
+4. Complexity (CC - Solo Backend):
+   Complejidad Ciclomática. Mide cuántos caminos independientes tiene el código (ifs, loops).
+   - 1-5: Simple, bajo riesgo.
+   - 6-10: Más complejo, riesgo moderado.
+   - 11+: Muy complejo, alto riesgo, difícil de testear.
+
+5. Maintainability Index (MI - Solo Backend):
+   Índice de Mantenibilidad (0-100). Cuanto más alto, mejor.
+   - > 20: Alta mantenibilidad.

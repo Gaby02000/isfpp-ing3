@@ -494,6 +494,28 @@ Abre la consola del navegador (F12) y revisa:
 
 ---
 
+## 📊 Métricas de Código
+
+### Ejecutar reporte de métricas
+
+El proyecto cuenta con un script automático para generar métricas de código (Líneas de código, comentarios, complejidad, etc.) tanto para Backend (Python/Radon) como Frontend (React/Sloc).
+
+**Requisitos previos:**
+- Tener `pip` instalado (Python).
+- Tener `npx` instalado (Node.js).
+
+```bash
+# Desde la raíz del proyecto
+pip install radon
+python3 metrics_runner.py
+```
+
+Esto generará una carpeta `metrics/` con:
+- `REPORTE_FINAL.txt`: Resumen ejecutivo.
+- Archivos `.txt` con el detalle técnico de cada herramienta.
+
+---
+
 ## 📝 Notas Importantes
 
 1. **Puertos por defecto:**
